@@ -1,5 +1,9 @@
 # MSiA423 Template Repository
 
+Author: Wenyang Pan
+
+QA: Xaiver Dong
+
 <!-- toc -->
 
 - [Directory structure](#directory-structure)
@@ -141,7 +145,7 @@ The Dockerfile for running the flask app is in the `app/` folder. To build the i
 ```
 
 This command builds the Docker image, with the tag `pennylane`, based on the instructions in `app/Dockerfile` and the files existing in this directory.
- 
+
 ### 2. Run the container 
 
 To run the app, run from this directory: 
@@ -189,7 +193,7 @@ From within the Docker container, the following command should work to run unit 
 
 ```bash
 python -m pytest
-``` 
+```
 
 Using Docker, run the following, if the image has not been built yet:
 
@@ -202,4 +206,3 @@ To run the tests, run:
 ```bash
  docker run penny -m pytest
 ```
- 
