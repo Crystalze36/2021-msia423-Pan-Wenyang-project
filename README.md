@@ -1,10 +1,12 @@
-# MSiA423 Template Repository
+# MSiA423 Pokemon Classifier and Recommender
 
 Author: Wenyang Pan
 
 QA: Xaiver Dong
 
 <!-- toc -->
+
++ [Project Charter](#project-charter)
 
 - [Directory structure](#directory-structure)
 - [Running the app](#running-the-app)
@@ -22,6 +24,32 @@ QA: Xaiver Dong
   * [Workaround for potential Docker problem for Windows.](#workaround-for-potential-docker-problem-for-windows)
 
 <!-- tocstop -->
+
+### Project Charter 
+
+#### Background 
+
+[Pokemon](https://en.wikipedia.org/wiki/Pok%C3%A9mon#Gameplay_of_Pok%C3%A9mon) is a Japanese multimedia franchise, including video game, books, anime film series, live-action films etc. The popularity of the Pokemon franchise starts from video games and one of the famous release is the augmented reality mobile game Pokémon GO in 2016. The game players are the "Pokemon Trainers" and they try to capture Pokemons and train them.
+
+#### Vision
+
+When playing the Pokemon video games, we might encounter two problems. First, we might want to have ideas about a new Pokemon and argue whether this Pokemon can be categorized as legendary Pokemon (a group of incredibly rare and often very powerful Pokemon). Second, we might like a certain Pokemon and want to find Pokemons with similar characteristics. However, those two problems can be hard since it is difficult to find explicit criterias for  legendary Pokemon and go through the information of more than 800 Pokemons to find similar pairs. 
+
+My app aims to solve these two problems by building models based on existing Pokemon data. It can automatically judge the probability about whether a Pokemon is legendary and find the most similar Pokemons of a certain Pokemon.
+
+#### Mission
+
+For the classifier, the user will input the number of certain features (hp, attack, defense) of a imagined Pokemon and the model will output the probability of the imagined Pokemon being legendary. For the recommender, the user will input a name of Pokemon and the recommender will output 10 most similar Pokemons according to a underlying cluster algorithm. The data for this proejct comes from this [Pokemon dataset](https://www.kaggle.com/rounakbanik/pokemon). 
+
+#### Success Criteria
+
+For the classifier, we will deploy the model if the test accuracy of the model is higher than 0.9 and test F1 score is higher than 0.8. We consider F1 because the data is imbalanced and relatively higher score for both metrics can indicate that  the model can reliably predict whether a Pokemon can be classified as legendary. For business value, we can monitor how many times user visit this app and use this classifier funtionality. 
+
+For the recommender, there are not technical metrics we can directly use since the problem is unsupervised. However, the app will include link to encourgae users to further explore the recommended Pokemon and we can monitor the click rate of these links to measure the success of this recommender.
+
+Overall, a successful deployment will help Pokemon players to further explore and enjoy the game.
+
+
 
 ## Directory structure 
 
