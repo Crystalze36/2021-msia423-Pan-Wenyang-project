@@ -4,7 +4,7 @@ Author: Wenyang Pan
 
 QA: Xaiver Dong
 
-### Project Charter 
+## Project Charter 
 
 #### Background 
 
