@@ -8,23 +8,39 @@ QA: Xaiver Dong
 
 #### Background 
 
-[Pokemon](https://en.wikipedia.org/wiki/Pok%C3%A9mon#Gameplay_of_Pok%C3%A9mon) is a Japanese multimedia franchise, including video game, books, anime film series, live-action films etc. The popularity of the Pokemon franchise starts from video games and one of the famous release is the augmented reality mobile game Pokémon GO in 2016. The game players are the "Pokemon Trainers" and they try to capture Pokemons and train them.
+[Pokemon](https://en.wikipedia.org/wiki/Pok%C3%A9mon#Gameplay_of_Pok%C3%A9mon) is a Japanese multimedia franchise, including video games, books, anime film series, live-action films, etc. The popularity of the Pokemon franchise starts from video games and one of the famous releases is the augmented reality mobile game Pokémon GO in 2016. The game players are the "Pokemon Trainers" and they try to capture Pokemons and train them.
 
 #### Vision
 
-When playing the Pokemon video games, we might encounter two problems. We might like a certain Pokemon and want to find Pokemon with similar characteristics. However, those two problems can be hard since it is difficult to find explicit criterias for  legendary Pokemon and go through the information of more than 800 Pokemons to find similar pairs. 
+When playing Pokemon video games, players can be overwhelmed by the vast information. The game includes more than 800 different Pokemons and each Pokemon has more than 20 attributes. Sometimes, the player might like a certain Pokemon and want to find Pokemon with similar characteristics for following a playing strategy. However, given the large number of Pokemons, it is hard to go over all of them and identify similar Pokemons manually. 
 
-My app aims to solve these two problems by building models based on existing Pokemon data. It can automatically find the most similar Pokemon of a certain Pokemon.
+This app aims to solve this problem by building models based on existing Pokemon data and automatically finding the most similar Pokemons of a certain Pokemon. As a result, players can spend their time enjoying the game instead of reading through a Pokemon encyclopedia.
 
 #### Mission
 
-The user will input a name of Pokemon and the recommender will output 10 most similar Pokemons according to a underlying cluster algorithm. The data for this proejct comes from this [Pokemon dataset](https://www.kaggle.com/rounakbanik/pokemon). 
+The user will input a name of Pokemon and the recommender will output 10 most similar Pokemons according to an underlying cluster algorithm. The data for this project comes from this [Pokemon dataset](https://www.kaggle.com/rounakbanik/pokemon). 
+
+An example of running the app will look like the following. In a text input field, the user will input a Pokemon they like and the app will output some recommended Pokemons. For example, if the user input "Bulbasaur" (the name of a Pokemon), the app might output the following table, where each row represents a recommended Pokemon. 
+
+
+|      | name       | type1 | link                                     |
+| ---: | :--------- | :---- | :--------------------------------------- |
+|    1 | Charmeleon | fire  | https://pokemondb.net/pokedex/Charmeleon |
+|    2 | Wartortle  | water | https://pokemondb.net/pokedex/Wartortle  |
+
+The actual format and recommended content in the app will probably be different but the idea should remain the same.
 
 #### Success Criteria
 
-For the recommender, there are not technical metrics we can directly use since the problem is unsupervised. However, the app will include link to encourgae users to further explore the recommended Pokemon and we can monitor the click rate of these links to measure the success of this recommender.
+##### Machine Learning Metrics
 
-Overall, a successful deployment will help Pokemon players to further explore and enjoy the game.
+Because the app uses an unsupervised clustering algorithm, we will not use a fixed number of certain metrics as the deployment threshold. Instead, we will deploy the algorithm after identifying the best number of clusters with inertia and silhouette score and verifying the clustering algorithm is stable; that is, the model will predict similar clusters when we fit the model with half of the data and predict the cluster for the other half of the data.
+
+Once the app goes live, we can calculate and monitor some other metrics, like the precision of recommendation by observing user behavior. For example, we can count a recommendation as correct when the user clicks the link to learn more about a recommended Pokemon. We can also conduct A/B testing to see whether a certain recommendation algorithm leads to higher precision.
+
+##### Business Metrics
+
+To determine whether the success of the app from a business perspective, we can measure the number of visits to the app and the user engagement to the Pokemon game. Overall, a successful deployment of the app will help Pokemon players to better explore and enjoy the game.
 
 
 
