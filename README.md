@@ -12,7 +12,7 @@ QA: Xaiver Dong
 
 #### Vision
 
-When playing Pokemon video games, players can be overwhelmed by the vast information. The game includes more than 800 different Pokemons and each Pokemon has more than 20 attributes. Sometimes, the player might like a certain Pokemon and want to find Pokemon with similar characteristics for following a playing strategy. However, given the large number of Pokemons, it is hard to go over all of them and identify similar Pokemons manually. 
+When playing Pokemon video games, players can be overwhelmed by the vast information. The game includes more than 800 different Pokemons and each Pokemon has more than 20 attributes. Sometimes, the player might like a certain Pokemon and want to find Pokemon with similar characteristics for implementing a playing strategy. However, given the large number of Pokemons, it is hard to go over all of them and identify similar Pokemons manually. 
 
 This app aims to solve this problem by building models based on existing Pokemon data and automatically finding the most similar Pokemons of a certain Pokemon. As a result, players can spend their time enjoying the game instead of reading through a Pokemon encyclopedia.
 
@@ -28,19 +28,19 @@ An example of running the app will look like the following. In a text input fiel
 |    1 | Charmeleon | fire  | https://pokemondb.net/pokedex/Charmeleon |
 |    2 | Wartortle  | water | https://pokemondb.net/pokedex/Wartortle  |
 
-The actual format and recommended content in the app will probably be different but the idea should remain the same.
+The actual format and recommended content in the app will probably be different than the table above. Specifically, the app will probably recommend more than 2 Pokemons and include some other features of each Pokemon, like location/environment found, counter type, etc. But the idea of recommending relevant Pokemons given user's input should remain the same.
 
 #### Success Criteria
 
 ##### Machine Learning Metrics
 
-Because the app uses an unsupervised clustering algorithm, we will not use a fixed number of certain metrics as the deployment threshold. Instead, we will deploy the algorithm after identifying the best number of clusters with inertia and silhouette score and verifying the clustering algorithm is stable; that is, the model will predict similar clusters when we fit the model with half of the data and predict the cluster for the other half of the data.
+Because the app uses an unsupervised clustering algorithm, we will not use fixed number of certain metrics as the deployment threshold. Instead, we will deploy the algorithm after identifying the best number of clusters with inertia and silhouette score and verifying the clustering algorithm is stable; that is, the model will predict similar clusters when we fit the model with half of the data and predict the cluster for the other half of the data.
 
 Once the app goes live, we can calculate and monitor some other metrics, like the precision of recommendation by observing user behavior. For example, we can count a recommendation as correct when the user clicks the link to learn more about a recommended Pokemon. We can also conduct A/B testing to see whether a certain recommendation algorithm leads to higher precision.
 
 ##### Business Metrics
 
-To determine whether the success of the app from a business perspective, we can measure the number of visits to the app and the user engagement to the Pokemon game. Overall, a successful deployment of the app will help Pokemon players to better explore and enjoy the game.
+To determine the success of the app from a business perspective, we can measure the number of visits to the app and the user engagement to the Pokemon game. For user engagement, we might send surveys to the app users to learn more about their game performance and satisfaction after using the app. Overall, a successful deployment of the app will help Pokemon players to better explore and enjoy the game.
 
 
 
