@@ -49,6 +49,7 @@ def upload_file_to_s3(local_path: str, s3path: str) -> None:
     Args:
         local_path (str): the path that points to the local data
         s3path (str): the s3 path that the data will be uploaded to
+    Returns: None
     """
 
     s3bucket, s3_just_path = parse_s3(s3path)
@@ -71,6 +72,7 @@ def download_file_from_s3(local_path: str, s3path: str) -> None:
     Args:
         local_path (str): the path that will store the downloaded data
         s3path (str): the s3 path that the data will be downloaded from
+    Returns: None
     """
 
     s3bucket, s3_just_path = parse_s3(s3path)
