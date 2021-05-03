@@ -64,7 +64,7 @@ class PokemonManager:
         """
         self.session.close()
 
-    def add_track(self, name: str, type1: str, type2: str) -> None:
+    def add_pokemon(self, name: str, type1: str, type2: str) -> None:
         """Seeds an existing database with additional Pokemons.
         Args:
             name (str): name of the pokemon
@@ -74,7 +74,7 @@ class PokemonManager:
         """
 
         session = self.session
-        track = Pokemon(english_name=name, type1=type1, type2=type2)
-        session.add(track)
+        pokemon = Pokemon(english_name=name, type1=type1, type2=type2)
+        session.add(pokemon)
         session.commit()
         logger.info(f"Pokemon {name} with type {type1} and {type2} was added to the database")
