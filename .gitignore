@@ -3,21 +3,24 @@ __pycache__/
 *.pyc
 *.py[cod]
 *.class
-.log
+*.log
 *.egg-info/
-.ipynb_checkpoints
+.ipynb_checkpoints/
 .env
 .venv
 env/
 venv/
 .mypy_cache/
+*.jar
+dist/
 
 # IDE
 .vscode/
 .idea/
 
-# Mac OS
+# OS
 .DS_Store
+Thumbs.db
 
 # Data
 data/*
