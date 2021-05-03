@@ -88,7 +88,12 @@ To determine the success of the app from a business perspective, we can measure 
 ├── requirements.txt                  <- Python package dependencies 
 ```
 
+## Data Acquisition
+
+The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. 
+
 ## Running the app
+
 ### 1. Initialize the database 
 
 #### Create the database 
