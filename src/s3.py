@@ -1,8 +1,8 @@
+from typing import Tuple
 import argparse
 import logging
 import re
 
-import pandas as pd
 import boto3
 import botocore
 
@@ -21,7 +21,18 @@ logging.getLogger("s3fs").setLevel(logging.ERROR)
 logger = logging.getLogger('s3')
 
 
-def parse_s3(s3path):
+def parse_s3(s3path: str) -> Tuple[str, str]:
+    """
+    Parse the s3 path to get the bucket name and the path name
+
+    Args:
+        s3path (str): the input s3 path
+
+    Returns:
+        s3bucket (str): the s3 bucket name
+        s3path (str): the s3 path
+    """
+
     regex = r"s3://([\w._-]+)/([\w./_-]+)"
 
     m = re.match(regex, s3path)
@@ -31,7 +42,14 @@ def parse_s3(s3path):
     return s3bucket, s3path
 
 
-def upload_file_to_s3(local_path, s3path):
+def upload_file_to_s3(local_path: str, s3path: str) -> None:
+    """
+    Upload the file in local path to s3
+
+    Args:
+        local_path (str): the path that points to the local data
+        s3path (str): the s3 path that the data will be uploaded to
+    """
 
     s3bucket, s3_just_path = parse_s3(s3path)
 
@@ -46,19 +64,14 @@ def upload_file_to_s3(local_path, s3path):
         logger.info('Data uploaded from %s to %s', local_path, s3path)
 
 
-def upload_to_s3_pandas(local_path, s3path, sep=';'):
+def download_file_from_s3(local_path: str, s3path: str) -> None:
+    """
+    Download a data file from s3
 
-    df = pd.read_csv(local_path, sep=sep)
-
-    try:
-        df.to_csv(s3path, sep=sep)
-    except botocore.exceptions.NoCredentialsError:
-        logger.error('Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables.')
-    else:
-        logger.info('Data uploaded from %s to %s', local_path, s3path)
-
-
-def download_file_from_s3(local_path, s3path):
+    Args:
+        local_path (str): the path that will store the downloaded data
+        s3path (str): the s3 path that the data will be downloaded from
+    """
 
     s3bucket, s3_just_path = parse_s3(s3path)
 
@@ -73,39 +86,17 @@ def download_file_from_s3(local_path, s3path):
         logger.info('Data downloaded from %s to %s', s3path, local_path)
 
 
-def download_from_s3_pandas(local_path, s3path, sep=';'):
-
-    try:
-        df = pd.read_csv(s3path, sep=sep)
-    except botocore.exceptions.NoCredentialsError:
-        logger.error('Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables.')
-    else:
-        df.to_csv(local_path, sep=sep)
-        logger.info('Data uploaded from %s to %s', local_path, s3path)
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--sep',
-                        default=';',
-                        help="CSV separator if using pandas")
-    parser.add_argument('--pandas', default=False, action='store_true',
-                        help="If used, will load data via pandas")
     parser.add_argument('--download', default=False, action='store_true',
-                        help="If used, will load data via pandas")
+                        help="If True, will download the data from S3. If False, will upload data to S3")
     parser.add_argument('--s3path', default='s3://2021-msia423-wenyang-pan/raw/pokemon.csv',
-                        help="If used, will load data via pandas")
+                        help="s3 data path to download or upload data")
     parser.add_argument('--local_path', default='data/pokemon.csv',
-                        help="Where to load data to in S3")
+                        help="local data path to store or upload data")
     args = parser.parse_args()
 
     if args.download:
-        if args.pandas:
-            download_from_s3_pandas(args.local_path, args.s3path, args.sep)
-        else:
-            download_file_from_s3(args.local_path, args.s3path)
+        download_file_from_s3(args.local_path, args.s3path)
     else:
-        if args.pandas:
-            upload_to_s3_pandas(args.local_path, args.s3path, args.sep)
-        else:
-            upload_file_to_s3(args.local_path, args.s3path)
+        upload_file_to_s3(args.local_path, args.s3path)
