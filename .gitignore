@@ -31,3 +31,4 @@ config/local
 
 # Credentials
 .mysqlconfig
+.s3config
