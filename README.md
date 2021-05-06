@@ -90,33 +90,51 @@ To determine the success of the app from a business perspective, we can measure 
 
 ## Data Acquisition
 
-The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. 
+### Raw Data from Kaggle
 
-### Interact with the data from S3
+The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. Because the dataset is relatively small, we also save a copy in `data/sample/pokemon.csv`.
 
-#### Build Docker Image
+### Docker Image
+
+We encourage you to use Docker to interact with this data acquisition steps. The following command build the docker image for these data acquisition steps. You can use it to do both the S3 and the Database interaction.
 
 ```
 docker build -f Dockerfile_data -t pokemon_data .
 ```
 
+### Interact with S3
+
+#### AWS Credential in Environment Variables
+
+You need to have two environment variables - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`  setup in your computer to run the following commands with S3. A simple way to do this run the following two lines in your terminal shell. Note that you need to replace "YOUR_ACCESS_KEY_ID" and "YOUR_SECRET_ACCESS_KEY" to your real id and secret access key. 
+
+```bash
+export AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
+```
+
 #### Download Data from S3
 
 ```
-docker run pokemon_data src/s3.py --download --local_path={your_local_path} --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY
+docker run \
+	-e AWS_ACCESS_KEY_ID \
+	-e AWS_SECRET_ACCESS_KEY \
+	pokemon_data src/s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
 ```
 
 #### Upload Data to S3
 
 ```
-docker run pokemon_data src/s3.py --s3_path={your_s3_path}
+docker run \
+	-e AWS_ACCESS_KEY_ID \
+	-e AWS_SECRET_ACCESS_KEY \
+	pokemon_data src/s3.py --local_path={your_local_path} --s3_path={your_s3_path}
 ```
 
-## Running the app
+### Database
 
-### 1. Initialize the database 
+#### Create the Database
 
-#### Create the database 
 To create the database in the location configured in `config.py` run: 
 
 `python run.py create_db --engine_string=<engine_string>`
@@ -124,19 +142,22 @@ To create the database in the location configured in `config.py` run:
 By default, `python run.py create_db` creates a database at `sqlite:///data/pokemons.db`.
 
 #### Adding pokemons 
+
 To add pokemons to the database:
 
 `python run.py ingest --engine_string=<engine_string> --name=<NAME> --type1=<TYPE1> --type2=<TYPE2>`
 
 By default, `python run.py ingest` adds *Charizard* with type1 fire and type2 flying to the SQLite database located in `sqlite:///data/pokemons.db`.
 
-#### Defining your engine string 
+#### Note on engine_string
+
 A SQLAlchemy database connection is defined by a string with the following format:
 
 `dialect+driver://username:password@host:port/database`
 
 The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). 
-##### Local SQLite database 
+
+#### Local Database configuration 
 
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file: 
 
@@ -152,7 +173,7 @@ You can also define the absolute path with four `////`, for example:
 engine_string = 'sqlite://////Users/martinpan/Repos/2021-msia423-wenyang-pan/data/pokemons.db'
 ```
 
-### Remote MySQL Database
+#### Remote Database Connection
 
 ##### Export Connection Variables
 
@@ -189,4 +210,3 @@ docker run -it \
     --env DATABASE_NAME \
     pokemon_data run.py
 ```
-
