@@ -1,4 +1,5 @@
 import os
+
 DEBUG = True
 LOGGING_CONFIG = "config/logging/local.conf"
 PORT = 5000
@@ -21,6 +22,4 @@ if SQLALCHEMY_DATABASE_URI is not None:
 elif DB_HOST is None:
     SQLALCHEMY_DATABASE_URI = 'sqlite:///data/pokemons.db'
 else:
-    SQLALCHEMY_DATABASE_URI = '{dialect}://{user}:{pw}@{host}:{port}/{db}'.format(dialect=DB_DIALECT, user=DB_USER,
-                                                                                  pw=DB_PW, host=DB_HOST, port=DB_PORT,
-                                                                                  db=DATABASE)
+    SQLALCHEMY_DATABASE_URI = f'{DB_DIALECT}://{DB_USER}:{DB_PW}@{DB_HOST}:{DB_PORT}/{DATABASE}'

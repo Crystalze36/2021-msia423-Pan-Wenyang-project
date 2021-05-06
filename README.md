@@ -104,7 +104,7 @@ To create the database in the location configured in `config.py` run:
 By default, `python run.py create_db` creates a database at `sqlite:///data/pokemons.db`.
 
 #### Adding pokemons 
-To add songs to the database:
+To add pokemons to the database:
 
 `python run.py ingest --engine_string=<engine_string> --name=<NAME> --type1=<TYPE1> --type2=<TYPE2>`
 
@@ -130,5 +130,43 @@ You can also define the absolute path with four `////`, for example:
 
 ```python
 engine_string = 'sqlite://////Users/martinpan/Repos/2021-msia423-wenyang-pan/data/pokemons.db'
+```
+
+### Remote MySQL Database
+
+##### Export Connection Variables
+
+````
+source .mysqlconfig
+echo $MYSQL_HOST
+````
+
+##### Connect to Database
+
+```
+docker run -it --rm \
+    mysql:5.7.33 \
+    mysql \
+    -h$MYSQL_HOST \
+    -u$MYSQL_USER \
+    -p$MYSQL_PASSWORD
+```
+
+##### Build Docker Image
+
+```
+docker build -t pokemon_mysql .
+```
+
+##### Run Docker Container
+
+```
+docker run -it \
+    --env MYSQL_HOST \
+    --env MYSQL_PORT \
+    --env MYSQL_USER \
+    --env MYSQL_PASSWORD \
+    --env DATABASE_NAME \
+    pokemon_mysql run.py
 ```
 
