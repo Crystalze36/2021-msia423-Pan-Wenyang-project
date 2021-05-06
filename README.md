@@ -92,6 +92,26 @@ To determine the success of the app from a business perspective, we can measure 
 
 The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. 
 
+### Interact with the data from S3
+
+#### Build Docker Image
+
+```
+docker build -f Dockerfile_data -t pokemon_data .
+```
+
+#### Download Data from S3
+
+```
+docker run pokemon_data src/s3.py --download --local_path={your_local_path} --env AWS_ACCESS_KEY_ID --env AWS_SECRET_ACCESS_KEY
+```
+
+#### Upload Data to S3
+
+```
+docker run pokemon_data src/s3.py --s3_path={your_s3_path}
+```
+
 ## Running the app
 
 ### 1. Initialize the database 
@@ -155,7 +175,7 @@ docker run -it --rm \
 ##### Build Docker Image
 
 ```
-docker build -t pokemon_mysql .
+docker build -t pokemon_data .
 ```
 
 ##### Run Docker Container
@@ -167,6 +187,6 @@ docker run -it \
     --env MYSQL_USER \
     --env MYSQL_PASSWORD \
     --env DATABASE_NAME \
-    pokemon_mysql run.py
+    pokemon_data run.py
 ```
 

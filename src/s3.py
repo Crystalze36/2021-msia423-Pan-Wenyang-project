@@ -92,9 +92,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--download', default=False, action='store_true',
                         help="If True, will download the data from S3. If False, will upload data to S3")
-    parser.add_argument('--s3path', default='s3://2021-msia423-wenyang-pan/raw/pokemon.csv',
+    parser.add_argument('--s3path', default='s3://2021-msia423-wenyang-pan/raw/pokemon_ha.csv',
                         help="s3 data path to download or upload data")
-    parser.add_argument('--local_path', default='data/pokemon.csv',
+    parser.add_argument('--local_path', default='data/sample/pokemon.csv',
                         help="local data path to store or upload data")
     args = parser.parse_args()
 
