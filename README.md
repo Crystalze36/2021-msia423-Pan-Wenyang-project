@@ -6,6 +6,10 @@ QA: Xaiver Dong
 
 ## Project Charter 
 
+<img src="figures/pokemon_show.png" alt="drawing" height="300" width="360"/>
+
+
+
 #### Background 
 
 [Pokemon](https://en.wikipedia.org/wiki/Pok%C3%A9mon#Gameplay_of_Pok%C3%A9mon) is a Japanese multimedia franchise, including video games, books, anime film series, live-action films, etc. The popularity of the Pokemon franchise starts from video games and one of the famous releases is the augmented reality mobile game Pokémon GO in 2016. The game players are the "Pokemon Trainers" and they try to capture Pokemons and train them.
@@ -96,7 +100,7 @@ The dataset used for this app comes from Kaggle. To download the data, you can g
 
 ### Docker Image
 
-We encourage you to use Docker to interact with this data acquisition steps. The following command build the docker image for these data acquisition steps. You can use it to do both the S3 and the Database interaction.
+If you want to use Docker to interact with this data acquisition steps. You can use the following command to build the docker image for these data acquisition steps. You can use it to do both the S3 and the Database interaction.
 
 ```
 docker build -f Dockerfile_data -t pokemon_data .
@@ -113,16 +117,25 @@ export AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY_ID"
 export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
 ```
 
+#### Data path
+
+For both downloading data from s3 and uploading data to s3, you can specify your local data path and s3 data path by using the `--local_path` and `--s3_path` as shown below. The default `s3_path` is `'s3://2021-msia423-wenyang-pan/raw/pokemon.csv'`and the default local path is `data/sample/pokemon.csv`.
+
 #### Download Data from S3
 
 ```
-docker run \
-	-e AWS_ACCESS_KEY_ID \
-	-e AWS_SECRET_ACCESS_KEY \
-	pokemon_data src/s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
+python3 src/s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
 ```
 
 #### Upload Data to S3
+
+```
+python3 src/s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
+```
+
+##### Uploading with docker
+
+You can also use docker to upload the data to s3 with the following command.
 
 ```
 docker run \
@@ -175,14 +188,27 @@ engine_string = 'sqlite://////Users/martinpan/Repos/2021-msia423-wenyang-pan/dat
 
 #### Remote Database Connection
 
-##### Export Connection Variables
+##### Prerequisites
 
-````
-source .mysqlconfig
-echo $MYSQL_HOST
-````
+In order to proceed with the following command, you need to satisfy the following requirements:
 
-##### Connect to Database
+1. You need to connect to the northwestern VPN
+
+2. You should have the `pokemon_data` image built as described in the [Docker Image section] (#Docker-Image).
+
+3. If you need to have connection variables set up in your environment variables. You should have 5 variables: `MYSQL_USER`, `MYSQL_PASSWORD`,  `MYSQL_HOST`,  `MYSQL_PORT `, `MYSQL_DATABASE`. Like we describe in the AWS credential section, you can setup your environment variables with the following. Note that you need to replace these with your actual connection credentials. 
+
+   ```bash
+   export MYSQL_USER="YOUR_SQL_USER_NAME"
+   export MYSQL_PASSWORD="YOUR_SQL_PASSWORD"
+   export MYSQL_HOST="YOUR_SQL_HOST"
+   export MYSQL_PORT="YOUR_SQL_PORT"
+   export MYSQL_PORT="YOUR_DATABASE_NAME"
+   ```
+
+##### Test Connection to Database
+
+You can run the following to test whether you can connect to the database. 
 
 ```
 docker run -it --rm \
@@ -193,20 +219,33 @@ docker run -it --rm \
     -p$MYSQL_PASSWORD
 ```
 
-##### Build Docker Image
+If succeed, you should be able to enter an interactive mysql session and you can show all databases you have with the command: `show databases;`.
 
-```
-docker build -t pokemon_data .
-```
+##### Create Databases 
 
-##### Run Docker Container
+You can create a new databases with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`.
 
 ```
 docker run -it \
-    --env MYSQL_HOST \
-    --env MYSQL_PORT \
-    --env MYSQL_USER \
-    --env MYSQL_PASSWORD \
-    --env DATABASE_NAME \
-    pokemon_data run.py
+    -e MYSQL_HOST \
+    -e MYSQL_PORT \
+    -e MYSQL_USER \
+    -e MYSQL_PASSWORD \
+    -e DATABASE_NAME \
+    pokemon_data run.py create_db --engine_string=={your_engine_string}
 ```
+
+##### Add information to the Databases
+
+You can add information about a Pokemon with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`. The default added Pokemon is "Charizard", with "fire" as type1 and "flying" as type2.
+
+```
+docker run -it \
+    -e MYSQL_HOST \
+    -e MYSQL_PORT \
+    -e MYSQL_USER \
+    -e MYSQL_PASSWORD \
+    -e DATABASE_NAME \
+    pokemon_data run.py ingest --engine_string={your_engine_string} --name={pokemon name} --type1={1st type} --type2={2nd type}
+```
+
