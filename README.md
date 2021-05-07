@@ -92,6 +92,11 @@ To determine the success of the app from a business perspective, we can measure 
 ├── requirements.txt                  <- Python package dependencies 
 ```
 
+## Software Requirements
+
++ If you want to run the code in this project repo locally, you need to have python 3.6 or above. 
++ In the Docker image, we specify the python 3.7 as the running python version.
+
 ## Data Acquisition
 
 ### Raw Data from Kaggle
@@ -194,7 +199,7 @@ In order to proceed with the following command, you need to satisfy the followin
 
 1. You need to connect to the northwestern VPN
 
-2. You should have the `pokemon_data` image built as described in the [Docker Image section] (#Docker-Image).
+2. You should have the `pokemon_data` image built as described in the Docker Image section.
 
 3. If you need to have connection variables set up in your environment variables. You should have 5 variables: `MYSQL_USER`, `MYSQL_PASSWORD`,  `MYSQL_HOST`,  `MYSQL_PORT `, `MYSQL_DATABASE`. Like we describe in the AWS credential section, you can setup your environment variables with the following. Note that you need to replace these with your actual connection credentials. 
 
