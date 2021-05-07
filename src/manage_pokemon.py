@@ -19,7 +19,7 @@ class Pokemon(Base):
 
     __tablename__ = 'pokemons'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     english_name = Column(String(100), unique=True, nullable=False)
     type1 = Column(String(100), unique=False, nullable=False)
     type2 = Column(String(100), unique=False, nullable=True)

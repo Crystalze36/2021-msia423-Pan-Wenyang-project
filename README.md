@@ -124,13 +124,13 @@ For both downloading data from s3 and uploading data to s3, you can specify your
 #### Download Data from S3
 
 ```
-python3 src/s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
+python3 run_s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
 ```
 
 #### Upload Data to S3
 
 ```
-python3 src/s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
+python3 run_s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
 ```
 
 ##### Uploading with docker
@@ -141,7 +141,7 @@ You can also use docker to upload the data to s3 with the following command.
 docker run \
 	-e AWS_ACCESS_KEY_ID \
 	-e AWS_SECRET_ACCESS_KEY \
-	pokemon_data src/s3.py --local_path={your_local_path} --s3_path={your_s3_path}
+	pokemon_data run_s3.py --local_path={your_local_path} --s3_path={your_s3_path}
 ```
 
 ### Database
@@ -203,7 +203,7 @@ In order to proceed with the following command, you need to satisfy the followin
    export MYSQL_PASSWORD="YOUR_SQL_PASSWORD"
    export MYSQL_HOST="YOUR_SQL_HOST"
    export MYSQL_PORT="YOUR_SQL_PORT"
-   export MYSQL_PORT="YOUR_DATABASE_NAME"
+   export MYSQL_DATABASE="YOUR_DATABASE_NAME"
    ```
 
 ##### Test Connection to Database
@@ -231,13 +231,13 @@ docker run -it \
     -e MYSQL_PORT \
     -e MYSQL_USER \
     -e MYSQL_PASSWORD \
-    -e DATABASE_NAME \
-    pokemon_data run.py create_db --engine_string=={your_engine_string}
+    -e MYSQL_DATABASE \
+    pokemon_data run_rds.py create_db --engine_string=={your_engine_string}
 ```
 
 ##### Add information to the Databases
 
-You can add information about a Pokemon with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`. The default added Pokemon is "Charizard", with "fire" as type1 and "flying" as type2.
+You can add information about a Pokemon with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`. The default added Pokemon is "Charizard", with "fire" as type1 and "flying" as type2. Note that the database created from the command above does not allow duplicate names. Thus, you might receive an error message if you try to insert a pokemon with same name twice.
 
 ```
 docker run -it \
@@ -245,7 +245,7 @@ docker run -it \
     -e MYSQL_PORT \
     -e MYSQL_USER \
     -e MYSQL_PASSWORD \
-    -e DATABASE_NAME \
-    pokemon_data run.py ingest --engine_string={your_engine_string} --name={pokemon name} --type1={1st type} --type2={2nd type}
+    -e MYSQL_DATABASE \
+    pokemon_data run_rds.py ingest --engine_string={your_engine_string} --name={pokemon name} --type1={1st type} --type2={2nd type}
 ```
 

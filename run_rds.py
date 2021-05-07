@@ -5,7 +5,7 @@ from src.manage_pokemon import PokemonManager, create_db
 from config.flaskconfig import SQLALCHEMY_DATABASE_URI
 
 logging.config.fileConfig('config/logging/local.conf')
-logger = logging.getLogger('pokemon-pipeline')
+logger = logging.getLogger('rds-pipeline')
 
 if __name__ == '__main__':
 

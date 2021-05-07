@@ -1,5 +1,4 @@
 from typing import Tuple
-import argparse
 import logging
 import re
 
@@ -8,17 +7,7 @@ import botocore
 
 # Adapted from: https://github.com/MSIA/2021-msia423/blob/main/aws-s3/s3.py
 
-logging.basicConfig(format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s', level=logging.DEBUG)
-logging.getLogger("botocore").setLevel(logging.ERROR)
-logging.getLogger("s3transfer").setLevel(logging.ERROR)
-logging.getLogger("urllib3").setLevel(logging.ERROR)
-logging.getLogger("boto3").setLevel(logging.ERROR)
-logging.getLogger("asyncio").setLevel(logging.ERROR)
-logging.getLogger("aiobotocore").setLevel(logging.ERROR)
-logging.getLogger("s3fs").setLevel(logging.ERROR)
-
-
-logger = logging.getLogger('s3')
+logger = logging.getLogger(__name__)
 
 
 def parse_s3(s3path: str) -> Tuple[str, str]:
@@ -61,6 +50,8 @@ def upload_file_to_s3(local_path: str, s3path: str) -> None:
         bucket.upload_file(local_path, s3_just_path)
     except botocore.exceptions.NoCredentialsError:
         logger.error('Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables.')
+    except FileNotFoundError:
+        logger.error('Please check whether your local path contains the data you want to upload', exc_info=True)
     else:
         logger.info('Data uploaded from %s to %s', local_path, s3path)
 
@@ -86,19 +77,3 @@ def download_file_from_s3(local_path: str, s3path: str) -> None:
         logger.error('Please provide AWS credentials via AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY env variables.')
     else:
         logger.info('Data downloaded from %s to %s', s3path, local_path)
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--download', default=False, action='store_true',
-                        help="If True, will download the data from S3. If False, will upload data to S3")
-    parser.add_argument('--s3_path', default='s3://2021-msia423-wenyang-pan/raw/pokemon.csv',
-                        help="s3 data path to download or upload data")
-    parser.add_argument('--local_path', default='data/sample/pokemon.csv',
-                        help="local data path to store or upload data")
-    args = parser.parse_args()
-
-    if args.download:
-        download_file_from_s3(args.local_path, args.s3_path)
-    else:
-        upload_file_to_s3(args.local_path, args.s3_path)
