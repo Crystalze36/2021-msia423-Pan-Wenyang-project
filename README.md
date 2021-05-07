@@ -95,7 +95,7 @@ To determine the success of the app from a business perspective, we can measure 
 ## Software Requirements
 
 + If you want to run the code in this project repo locally, you need to have python 3.6 or above. 
-+ In the Docker image, we specify the python 3.7 as the running python version.
++ In the Docker image, we use Python 3.6.9 as the running python version.
 
 ## Data Acquisition
 
@@ -135,7 +135,7 @@ python3 run_s3.py --download --local_path={your_local_path} --s3_path={your_s3_p
 #### Upload Data to S3
 
 ```
-python3 run_s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
+python3 run_s3.py --local_path={your_local_path} --s3_path={your_s3_path}
 ```
 
 ##### Uploading with docker
