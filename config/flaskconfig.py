@@ -20,6 +20,6 @@ SQLALCHEMY_DATABASE_URI = os.environ.get('SQLALCHEMY_DATABASE_URI')
 if SQLALCHEMY_DATABASE_URI is not None:
     pass
 elif DB_HOST is None:
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///data/pokemons.db'
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///data/msia423_pokemons.db'
 else:
     SQLALCHEMY_DATABASE_URI = f'{DB_DIALECT}://{DB_USER}:{DB_PW}@{DB_HOST}:{DB_PORT}/{DATABASE}'
