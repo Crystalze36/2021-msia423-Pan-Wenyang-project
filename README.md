@@ -88,7 +88,8 @@ To determine the success of the app from a business perspective, we can measure 
 ├── test/                             <- Files necessary for running model tests (see documentation below) 
 │
 ├── app.py                            <- Flask wrapper for running the model 
-├── run.py                            <- Simplifies the execution of one or more of the src scripts  
+├── run_s3.py                         <- Download and Upload data from/to S3
+├── run_rds.py                        <- Create and update table in RDS
 ├── requirements.txt                  <- Python package dependencies 
 ```
 
