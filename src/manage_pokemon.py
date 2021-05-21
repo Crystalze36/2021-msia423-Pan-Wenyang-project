@@ -24,7 +24,7 @@ class Pokemon(Base):
     type2 = Column(String(100), unique=False, nullable=True)
 
     def __repr__(self):
-        return f'Pokemon name: {self.english_name}'
+        return f'Pokemon name: {self.english_name}, type1: {self.type1}, type2: {self.type2}'
 
 
 def create_db(engine_string: str) -> None:
