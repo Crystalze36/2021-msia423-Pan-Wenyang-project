@@ -2,40 +2,36 @@ import logging.config
 
 import sqlalchemy
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, MetaData
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 
 logger = logging.getLogger(__name__)
-logger.setLevel("INFO")
 
 Base = declarative_base()
 
 
-class Tracks(Base):
-    """Create a data model for the database to be set up for capturing songs
-
+class Pokemon(Base):
+    """
+    Create a data model for the database to be set up for capturing Pokemon info
     """
 
-    __tablename__ = 'tracks'
+    __tablename__ = 'pokemons'
 
-    id = Column(Integer, primary_key=True)
-    title = Column(String(100), unique=False, nullable=False)
-    artist = Column(String(100), unique=False, nullable=False)
-    album = Column(String(100), unique=False, nullable=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    english_name = Column(String(100), unique=True, nullable=False)
+    type1 = Column(String(100), unique=False, nullable=False)
+    type2 = Column(String(100), unique=False, nullable=True)
 
     def __repr__(self):
-        return '<Track %r>' % self.title
+        return f'Pokemon name: {self.english_name}, type1: {self.type1}, type2: {self.type2}'
 
 
 def create_db(engine_string: str) -> None:
     """Create database from provided engine string
-
     Args:
-        engine_string: str - Engine string
-
+        engine_string (str): Engine string
     Returns: None
-
     """
     engine = sqlalchemy.create_engine(engine_string)
 
@@ -43,13 +39,13 @@ def create_db(engine_string: str) -> None:
     logger.info("Database created.")
 
 
-class TrackManager:
+class PokemonManager:
 
     def __init__(self, app=None, engine_string=None):
         """
         Args:
-            app: Flask - Flask app
-            engine_string: str - Engine string
+            app (Flask): Flask app
+            engine_string (str): Engine string
         """
         if app:
             self.db = SQLAlchemy(app)
@@ -63,26 +59,21 @@ class TrackManager:
 
     def close(self) -> None:
         """Closes session
-
         Returns: None
-
         """
         self.session.close()
 
-    def add_track(self, title: str, artist: str, album: str) -> None:
-        """Seeds an existing database with additional songs.
-
+    def add_pokemon(self, name: str, type1: str, type2: str) -> None:
+        """Seeds an existing database with additional Pokemons.
         Args:
-            title: str - Title of song
-            artist: str - Artist
-            album: str - Album title
-
+            name (str): name of the pokemon
+            type1 (str): the first type of that pokemon
+            type2 (str): the second type of that pokemon
         Returns:None
-
         """
 
         session = self.session
-        track = Tracks(artist=artist, album=album, title=title)
-        session.add(track)
+        pokemon = Pokemon(english_name=name, type1=type1, type2=type2)
+        session.add(pokemon)
         session.commit()
-        logger.info("%s by %s from album, %s, added to database", title, artist, album)
+        logger.info(f"Pokemon {name} with type {type1} and {type2} was added to the database")

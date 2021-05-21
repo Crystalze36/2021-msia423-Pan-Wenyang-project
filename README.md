@@ -6,6 +6,10 @@ QA: Xaiver Dong
 
 ## Project Charter 
 
+<img src="figures/pokemon_show.png" alt="drawing" height="300" width="360"/>
+
+
+
 #### Background 
 
 [Pokemon](https://en.wikipedia.org/wiki/Pok%C3%A9mon#Gameplay_of_Pok%C3%A9mon) is a Japanese multimedia franchise, including video games, books, anime film series, live-action films, etc. The popularity of the Pokemon franchise starts from video games and one of the famous releases is the augmented reality mobile game Pokémon GO in 2016. The game players are the "Pokemon Trainers" and they try to capture Pokemons and train them.
@@ -84,40 +88,100 @@ To determine the success of the app from a business perspective, we can measure 
 ├── test/                             <- Files necessary for running model tests (see documentation below) 
 │
 ├── app.py                            <- Flask wrapper for running the model 
-├── run.py                            <- Simplifies the execution of one or more of the src scripts  
+├── run_s3.py                         <- Download and Upload data from/to S3
+├── run_rds.py                        <- Create and update table in RDS
 ├── requirements.txt                  <- Python package dependencies 
 ```
 
-## Running the app
-### 1. Initialize the database 
+## Software Requirements
 
-#### Create the database 
++ If you want to run the code in this project repo locally, you need to have python 3.6 or above. 
++ In the Docker image, we use Python 3.6.9 as the running python version.
+
+## Data Acquisition
+
+### Raw Data from Kaggle
+
+The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. Because the dataset is relatively small, we also save a copy in `data/sample/pokemon.csv`.
+
+### Docker Image
+
+If you want to use Docker to interact with this data acquisition steps. You can use the following command to build the docker image for these data acquisition steps. You can use it to do both the S3 and the Database interaction.
+
+```
+docker build -f Dockerfile_data -t pokemon_data .
+```
+
+### Interact with S3
+
+#### AWS Credential in Environment Variables
+
+You need to have two environment variables - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`  setup in your computer to run the following commands with S3. A simple way to do this run the following two lines in your terminal shell. Note that you need to replace "YOUR_ACCESS_KEY_ID" and "YOUR_SECRET_ACCESS_KEY" to your real id and secret access key. 
+
+```bash
+export AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY_ID"
+export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
+```
+
+#### Data path
+
+For both downloading data from s3 and uploading data to s3, you can specify your local data path and s3 data path by using the `--local_path` and `--s3_path` as shown below. The default `s3_path` is `'s3://2021-msia423-wenyang-pan/raw/pokemon.csv'`and the default local path is `data/sample/pokemon.csv`.
+
+#### Download Data from S3
+
+```
+python3 run_s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
+```
+
+#### Upload Data to S3
+
+```
+python3 run_s3.py --local_path={your_local_path} --s3_path={your_s3_path}
+```
+
+##### Uploading with docker
+
+You can also use docker to upload the data to s3 with the following command.
+
+```
+docker run \
+	-e AWS_ACCESS_KEY_ID \
+	-e AWS_SECRET_ACCESS_KEY \
+	pokemon_data run_s3.py --local_path={your_local_path} --s3_path={your_s3_path}
+```
+
+### Database
+
+#### Create the Database
+
 To create the database in the location configured in `config.py` run: 
 
-`python run.py create_db --engine_string=<engine_string>`
+`python run_rds.py create_db --engine_string=<engine_string>`
 
-By default, `python run.py create_db` creates a database at `sqlite:///data/tracks.db`.
+By default, `python run.py create_db` creates a database at `sqlite:///data/pokemons.db`. Note that you can also change the `engine_string` by changing the content `<engine_string>` above or set an environment variable `SQLALCHEMY_DATABASE_URI`.
 
-#### Adding songs 
-To add songs to the database:
+#### Adding pokemons 
 
-`python run.py ingest --engine_string=<engine_string> --artist=<ARTIST> --title=<TITLE> --album=<ALBUM>`
+To add pokemons to the database:
 
-By default, `python run.py ingest` adds *Minor Cause* by Emancipator to the SQLite database located in `sqlite:///data/tracks.db`.
+`python run_rds.py ingest --engine_string=<engine_string> --name=<NAME> --type1=<TYPE1> --type2=<TYPE2>`
 
-#### Defining your engine string 
+By default, `python run_rds.py ingest` adds *Charizard* with type1 fire and type2 flying to the SQLite database located in `sqlite:///data/pokemons.db`.
+
+#### Note on engine_string
+
 A SQLAlchemy database connection is defined by a string with the following format:
 
 `dialect+driver://username:password@host:port/database`
 
-The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). We will cover SQLAlchemy and connection strings in the SQLAlchemy lab session on 
-##### Local SQLite database 
+The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). 
+
+#### Local Database configuration 
 
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file: 
 
 ```python
-engine_string='sqlite:///data/tracks.db'
-
+engine_string='sqlite:///data/pokemons.db'
 ```
 
 The three `///` denote that it is a relative path to where the code is being run (which is from the root of this directory).
@@ -125,105 +189,85 @@ The three `///` denote that it is a relative path to where the code is being run
 You can also define the absolute path with four `////`, for example:
 
 ```python
-engine_string = 'sqlite://///Users/cmawer/Repos/2020-MSIA423-template-repository/data/tracks.db'
+engine_string = 'sqlite://////Users/martinpan/Repos/2021-msia423-wenyang-pan/data/pokemons.db'
 ```
 
+#### Remote Database Connection
 
-### 2. Configure Flask app 
+##### Prerequisites
 
-`config/flaskconfig.py` holds the configurations for the Flask app. It includes the following configurations:
+In order to proceed with the following command, you need to satisfy the following requirements:
 
-```python
-DEBUG = True  # Keep True for debugging, change to False when moving to production 
-LOGGING_CONFIG = "config/logging/local.conf"  # Path to file that configures Python logger
-HOST = "0.0.0.0" # the host that is running the app. 0.0.0.0 when running locally 
-PORT = 5000  # What port to expose app on. Must be the same as the port exposed in app/Dockerfile 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///data/tracks.db'  # URI (engine string) for database that contains tracks
-APP_NAME = "penny-lane"
-SQLALCHEMY_TRACK_MODIFICATIONS = True 
-SQLALCHEMY_ECHO = False  # If true, SQL for queries made will be printed
-MAX_ROWS_SHOW = 100 # Limits the number of rows returned from the database 
+1. You need to connect to the northwestern VPN
+
+2. You should have the `pokemon_data` image built as described in the Docker Image section.
+
+3. If you need to have connection variables set up in your environment variables. You should have 5 variables: `MYSQL_USER`, `MYSQL_PASSWORD`,  `MYSQL_HOST`,  `MYSQL_PORT `, `MYSQL_DATABASE`. Like we describe in the AWS credential section, you can setup your environment variables with the following. Note that you need to replace these with your actual connection credentials. 
+
+   ```bash
+   export MYSQL_USER="YOUR_SQL_USER_NAME"
+   export MYSQL_PASSWORD="YOUR_SQL_PASSWORD"
+   export MYSQL_HOST="YOUR_SQL_HOST"
+   export MYSQL_PORT="YOUR_SQL_PORT"
+   export MYSQL_DATABASE="YOUR_DATABASE_NAME"
+   ```
+
+##### Test Connection to Database
+
+You can run the following to test whether you can connect to the database. 
+
+```
+docker run -it --rm \
+    mysql:5.7.33 \
+    mysql \
+    -h$MYSQL_HOST \
+    -u$MYSQL_USER \
+    -p$MYSQL_PASSWORD
 ```
 
-### 3. Run the Flask app 
+If succeed, you should be able to enter an interactive mysql session and you can show all databases you have with the command: `show databases;`.
 
-To run the Flask app, run: 
+##### Create Databases 
 
-```bash
-python app.py
+You can create a new databases with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`.
+
+```
+docker run -it \
+    -e MYSQL_HOST \
+    -e MYSQL_PORT \
+    -e MYSQL_USER \
+    -e MYSQL_PASSWORD \
+    -e MYSQL_DATABASE \
+    pokemon_data run_rds.py create_db --engine_string={your_engine_string}
 ```
 
-You should now be able to access the app at http://0.0.0.0:5000/ in your browser.
+##### Add information to the Databases
 
-## Running the app in Docker 
+You can add information about a Pokemon with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`. The default added Pokemon is "Charizard", with "fire" as type1 and "flying" as type2. Note that the database created from the command above does not allow duplicate names. Thus, you might receive an error message if you try to insert a pokemon with same name twice.
 
-### 1. Build the image 
-
-The Dockerfile for running the flask app is in the `app/` folder. To build the image, run from this directory (the root of the repo): 
-
-```bash
- docker build -f app/Dockerfile -t pennylane .
+```
+docker run -it \
+    -e MYSQL_HOST \
+    -e MYSQL_PORT \
+    -e MYSQL_USER \
+    -e MYSQL_PASSWORD \
+    -e MYSQL_DATABASE \
+    pokemon_data run_rds.py ingest --engine_string={your_engine_string} --name={pokemon name} --type1={1st type} --type2={2nd type}
 ```
 
-This command builds the Docker image, with the tag `pennylane`, based on the instructions in `app/Dockerfile` and the files existing in this directory.
+#### Examine the Database
 
-### 2. Run the container 
+##### Locally 
 
-To run the app, run from this directory: 
+If you create the database locally, you can view your result by using any sqlite client, such as [DB Browser](https://sqlitebrowser.org/), to open the `.db` file created after running the `run_rds.py` file. 
 
-```bash
-docker run -p 5000:5000 --name test pennylane
+##### Remote
+
+You can reenter the mysql interactive session by using the command under section [Test Connection to Database](#test-connection-to-database). Then you can type the following command to examine whether the table was created. Note that you need to replace `<your_target_database_name>` to the real database name. 
+
 ```
-You should now be able to access the app at http://0.0.0.0:5000/ in your browser.
-
-This command runs the `pennylane` image as a container named `test` and forwards the port 5000 from container to your laptop so that you can access the flask app exposed through that port. 
-
-If `PORT` in `config/flaskconfig.py` is changed, this port should be changed accordingly (as should the `EXPOSE 5000` line in `app/Dockerfile`)
-
-### 3. Kill the container 
-
-Once finished with the app, you will need to kill the container. To do so: 
-
-```bash
-docker kill test 
+show databases;
+use <your_target_database_name>;
+show tables; 
 ```
 
-where `test` is the name given in the `docker run` command.
-
-### Example using `python3` as an entry point
-
-We have included another example of a Dockerfile, `app/Dockerfile_python` that has `python3` as the entry point such that when you run the image as a container, the command `python3` is run, followed by the arguments given in the `docker run` command after the image name. 
-
-To build this image: 
-
-```bash
- docker build -f app/Dockerfile_python -t pennylane .
-```
-
-then run the `docker run` command: 
-
-```bash
-docker run -p 5000:5000 --name test pennylane app.py
-```
-
-The new image defines the entry point command as `python3`. Building the sample PennyLane image this way will require initializing the database prior to building the image so that it is copied over, rather than created when the container is run. Therefore, please **do the step [Create the database with a single song](#create-the-database-with-a-single-song) above before building the image**.
-
-# Testing
-
-From within the Docker container, the following command should work to run unit tests when run from the root of the repository: 
-
-```bash
-python -m pytest
-```
-
-Using Docker, run the following, if the image has not been built yet:
-
-```bash
- docker build -f app/Dockerfile_python -t pennylane .
-```
-
-To run the tests, run: 
-
-```bash
- docker run penny -m pytest
-```
