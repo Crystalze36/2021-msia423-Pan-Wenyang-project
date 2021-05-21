@@ -156,7 +156,7 @@ docker run \
 
 To create the database in the location configured in `config.py` run: 
 
-`python run.py create_db --engine_string=<engine_string>`
+`python run_rds.py create_db --engine_string=<engine_string>`
 
 By default, `python run.py create_db` creates a database at `sqlite:///data/pokemons.db`. Note that you can also change the `engine_string` by changing the content `<engine_string>` above or set an environment variable `SQLALCHEMY_DATABASE_URI`.
 
@@ -164,9 +164,9 @@ By default, `python run.py create_db` creates a database at `sqlite:///data/poke
 
 To add pokemons to the database:
 
-`python run.py ingest --engine_string=<engine_string> --name=<NAME> --type1=<TYPE1> --type2=<TYPE2>`
+`python run_rds.py ingest --engine_string=<engine_string> --name=<NAME> --type1=<TYPE1> --type2=<TYPE2>`
 
-By default, `python run.py ingest` adds *Charizard* with type1 fire and type2 flying to the SQLite database located in `sqlite:///data/pokemons.db`.
+By default, `python run_rds.py ingest` adds *Charizard* with type1 fire and type2 flying to the SQLite database located in `sqlite:///data/pokemons.db`.
 
 #### Note on engine_string
 
@@ -238,7 +238,7 @@ docker run -it \
     -e MYSQL_USER \
     -e MYSQL_PASSWORD \
     -e MYSQL_DATABASE \
-    pokemon_data run_rds.py create_db --engine_string=={your_engine_string}
+    pokemon_data run_rds.py create_db --engine_string={your_engine_string}
 ```
 
 ##### Add information to the Databases
@@ -253,5 +253,21 @@ docker run -it \
     -e MYSQL_PASSWORD \
     -e MYSQL_DATABASE \
     pokemon_data run_rds.py ingest --engine_string={your_engine_string} --name={pokemon name} --type1={1st type} --type2={2nd type}
+```
+
+#### Examine the Database
+
+##### Locally 
+
+If you create the database locally, you can view your result by using any sqlite client, such as [DB Browser](https://sqlitebrowser.org/), to open the `.db` file created after running the `run_rds.py` file. 
+
+##### Remote
+
+You can reenter the mysql interactive session by using the command under section [Test Connection to Database](#test-connection-to-database). Then you can type the following command to examine whether the table was created. Note that you need to replace `<your_target_database_name>` to the real database name. 
+
+```
+show databases;
+use <your_target_database_name>;
+show tables; 
 ```
 
