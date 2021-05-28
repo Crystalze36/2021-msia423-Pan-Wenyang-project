@@ -2,40 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link href="static/basic.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <title>pokemon</title>
 </head>
 
 <body>
     <h3>
-         Recommended Pokemon
+         Recommended Pokemon for {{ user_input }}
     </h3>
 
     <form action="/" method=post>
       <dl>
         <input type=text size=15 name=pokemon_name placeholder="pokemon_name">
-        <input type=submit value="Submit">
+        <input type=submit value="Search" class="btn btn-primary">
       </dl>
     </form>
 
     <hr/>
-    <table>
+    <table class="table table-hover">
          <thead>
             <tr>
-               <th>Recommend</th>
-               <th>Type1</th>
-               <th>Type2</th>
-               <th>Learn More</th>
+                <th>Recommend</th>
+                <th>Type1</th>
+                <th>Type2</th>
+                <th>Abilities</th>
+                <th>Generation</th>
             </tr>
          </thead>
 
          <tbody>
             {% for pokemon in pokemons %}
                <tr>
-                   <td>{{ pokemon.recommendation }}</td>
+                   <td><a href={{pokemon.learn_more}}> {{ pokemon.recommendation }} </a> </td>
                    <td>{{ pokemon.type1 }}</td>
                    <td>{{ pokemon.type2 }}</td>
-                   <td>{{ pokemon.learn_more }}</td>
+                   <td>{{ pokemon.abilities }}</td>
+                   <td>{{ pokemon.generation }}</td>
                </tr>
             {% endfor %}
          </tbody>

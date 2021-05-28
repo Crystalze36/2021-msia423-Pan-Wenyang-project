@@ -1,5 +1,6 @@
 import traceback
 import logging.config
+
 from flask import Flask
 from flask import render_template, request
 
@@ -23,18 +24,18 @@ pokemon_manager = PokemonManager(app)
 
 @app.route('/')
 def form():
-    return render_template('index.html')
+    return render_template('form.html')
 
 
 @app.route('/', methods=['POST'])
 def data():
     if request.method == 'POST':
         form_data = request.form.to_dict()['pokemon_name']
-        print(form_data)
         try:
             pokemons = pokemon_manager.session.query(Pokemon).filter_by(input=form_data).limit(
                 app.config["MAX_ROWS_SHOW"]).all()
-            logger.debug("Index page accessed")
+            if len(pokemons) == 0:
+                return render_template('not_found.html', user_input=form_data)
             return render_template('index.html', pokemons=pokemons, user_input=form_data)
         except:
             traceback.print_exc()
