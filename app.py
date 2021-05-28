@@ -1,7 +1,9 @@
 import traceback
 import logging.config
 from flask import Flask
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request
+
+from src.manage_pokemon import PokemonManager, Pokemon
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder="app/templates", static_folder="app/static")
@@ -16,20 +18,16 @@ logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug('Web app log')
 
 # Initialize the database session
-from src.manage_pokemon import PokemonManager, Pokemon
-
 pokemon_manager = PokemonManager(app)
 
 
-@app.route('/form')
+@app.route('/')
 def form():
-    return render_template('form.html')
+    return render_template('index.html')
 
 
-@app.route('/data', methods=['POST', 'GET'])
+@app.route('/', methods=['POST'])
 def data():
-    if request.method == 'GET':
-        return f"The URL /data is accessed directly. Try going to '/form' to submit form"
     if request.method == 'POST':
         form_data = request.form.to_dict()['pokemon_name']
         print(form_data)

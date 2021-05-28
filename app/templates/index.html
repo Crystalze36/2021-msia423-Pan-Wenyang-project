@@ -3,13 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <link href="static/basic.css" rel="stylesheet">
+    <title>pokemon</title>
 </head>
 
 <body>
     <h3>
-         Recommended Pokemon for {{ user_input }}
+         Recommended Pokemon
     </h3>
 
+    <form action="/" method=post>
+      <dl>
+        <input type=text size=15 name=pokemon_name placeholder="pokemon_name">
+        <input type=submit value="Submit">
+      </dl>
+    </form>
 
     <hr/>
     <table>
