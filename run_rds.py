@@ -26,13 +26,23 @@ if __name__ == '__main__':
     sb_ingest.add_argument("--engine_string", default=SQLALCHEMY_DATABASE_URI,
                            help="SQLAlchemy connection URI for database")
 
+    # Sub-parser for ingesting all data from a csv
+    sb_ingest = subparsers.add_parser("ingest-csv", description="Add data to database")
+    sb_ingest.add_argument("--input_path", default="data/result.csv", help="Name of Pokemon to be added")
+    sb_ingest.add_argument("--engine_string", default=SQLALCHEMY_DATABASE_URI,
+                           help="SQLAlchemy connection URI for database")
+
     args = parser.parse_args()
     sp_used = args.subparser_name
     if sp_used == 'create_db':
         create_db(args.engine_string)
-    elif sp_used == 'ingest':
-        tm = PokemonManager(engine_string=args.engine_string)
-        tm.add_pokemon(args.name, args.type1, args.type2)
-        tm.close()
+    # elif sp_used == 'ingest':
+    #    pm = PokemonManager(engine_string=args.engine_string)
+    #    pm.add_pokemon_rec(args.name, args.type1, args.type2)
+    #    pm.close()
+    elif sp_used == 'ingest-csv':
+        pm = PokemonManager(engine_string=args.engine_string)
+        pm.add_pokemon_rec_df(args.input_path)
+        pm.close()
     else:
         parser.print_help()
