@@ -7,37 +7,32 @@
 
 <body>
     <h3>
-         <a href = "{{ url_for('index') }}">Penny Lane Music Recommender</a>
+         Recommended Pokemon for {{ user_input }}
     </h3>
+
 
     <hr/>
     <table>
          <thead>
             <tr>
-               <th>Title</th>
-               <th>Artist</th>
-               <th>Album</th>
+               <th>Recommend</th>
+               <th>Type1</th>
+               <th>Type2</th>
+               <th>Learn More</th>
             </tr>
          </thead>
 
          <tbody>
-            {% for track in tracks %}
+            {% for pokemon in pokemons %}
                <tr>
-                   <td>{{ track.title }}</td>
-                   <td>{{ track.artist }}</td>
-                   <td>{{ track.album }}</td>
+                   <td>{{ pokemon.recommendation }}</td>
+                   <td>{{ pokemon.type1 }}</td>
+                   <td>{{ pokemon.type2 }}</td>
+                   <td>{{ pokemon.learn_more }}</td>
                </tr>
             {% endfor %}
          </tbody>
       </table>
-      <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
-      <dl>
-        <input type=text size=15 name=title placeholder="Title">
-        <input type=text size=15 name=artist placeholder="Artist">
-        <input type=text size=15 name=album placeholder="Album">
-        <input type=submit value=Add>
-      </dl>
-    </form>
 
 </body>
 </html>
