@@ -30,13 +30,14 @@ def form():
 @app.route('/', methods=['POST'])
 def data():
     if request.method == 'POST':
-        form_data = request.form.to_dict()['pokemon_name']
+        user_input = request.form.to_dict()['pokemon_name']
+        user_input = str(user_input).lower()
         try:
-            pokemons = pokemon_manager.session.query(Pokemon).filter_by(input=form_data).limit(
+            pokemons = pokemon_manager.session.query(Pokemon).filter_by(input=user_input).limit(
                 app.config["MAX_ROWS_SHOW"]).all()
             if len(pokemons) == 0:
-                return render_template('not_found.html', user_input=form_data)
-            return render_template('index.html', pokemons=pokemons, user_input=form_data)
+                return render_template('not_found.html', user_input=user_input)
+            return render_template('index.html', pokemons=pokemons, user_input=user_input)
         except:
             traceback.print_exc()
             logger.warning("Not able to display tracks, error page returned")
