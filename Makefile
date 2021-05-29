@@ -1,4 +1,4 @@
-.PHONY: image-app clean-image clean-container mysql-it create-db ingest-to-db image-data image-app docker-app-local kill-app-local
+.PHONY: image-app clean-image clean-container mysql-it create-db ingest-to-db image-data image-app docker-app-local kill-app-local aws-iden
 
 clean-image:
 	docker image prune
@@ -43,3 +43,6 @@ docker-app-local:
 
 kill-app-local:
 	docker kill test
+
+aws-iden:
+	aws sts get-caller-identity
