@@ -47,26 +47,26 @@ kill-app-local:
 aws-iden:
 	aws sts get-caller-identity
 
-data/sample/pokemon.csv: run_s3.py
+data/raw/pokemon.csv: run_s3.py
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		-e AWS_ACCESS_KEY_ID \
 		-e AWS_SECRET_ACCESS_KEY \
-		pokemon_data run_s3.py --download --local_path=data/sample/pokemon.csv --s3_path=s3://2021-msia423-wenyang-pan/raw/pokemon.csv
+		pokemon_data run_s3.py --download --local_path=data/raw/pokemon.csv --s3_path=s3://2021-msia423-wenyang-pan/raw/pokemon.csv
 
-s3-raw: data/sample/pokemon.csv
+s3-raw: data/raw/pokemon.csv
 
-data/data_scale.csv: run_model.py config/model_config.yaml
-	python run_model.py preprocess --input=data/sample/pokemon.csv --config=config/model_config.yaml
+data/interim/data_scale.csv: run_model.py config/model_config.yaml
+	python run_model.py preprocess --input=data/raw/pokemon.csv --config=config/model_config.yaml
 	
-preprocess: data/data_scale.csv
+preprocess: data/interim/data_scale.csv
 
-models/kmeans.joblib data/cluster_selection.png: run_model.py config/model_config.yaml
-	python run_model.py train --input=data/data_scale.csv --config=config/model_config.yaml
+models/kmeans.joblib figures/cluster_selection.png: run_model.py config/model_config.yaml
+	python run_model.py train --input=data/interim/data_scale.csv --config=config/model_config.yaml
 	
-train: models/kmeans.joblib data/cluster_selection.png
+train: models/kmeans.joblib figures/cluster_selection.png
 
-data/results.csv: run_model.py config/model_config.yaml
-	python run_model.py recommend --input=data/sample/pokemon.csv --config=config/model_config.yaml
+data/final/results.csv: run_model.py config/model_config.yaml
+	python run_model.py recommend --input=data/raw/pokemon.csv --config=config/model_config.yaml
 
-recommend: data/results.csv
+recommend: data/final/results.csv
   

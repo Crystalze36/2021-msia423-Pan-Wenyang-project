@@ -2,7 +2,7 @@ preprocess:
   scale_df:
     features: ['sp_attack', 'sp_defense', 'hp', 'attack', 'defense', 'speed']
   save_df: 
-    output_path: data/data_scale.csv
+    output_path: data/interim/data_scale.csv
 model:
   get_a_mod_list_and_dict:
     cluster_range: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -15,13 +15,13 @@ model:
     output_path: models/kmeans.joblib
 recommend:
   append_cluster_and_name:
-    scale_path: data/data_scale.csv 
+    scale_path: data/interim/data_scale.csv
     model_path: models/kmeans.joblib
   generate_recommendation:
     features: ['sp_attack', 'sp_defense', 'hp', 'attack', 'defense', 'speed']
     num_clusters: 6
     k: 11
-    output_path: data/results.csv
+    output_path: data/final/results.csv
     display_features: ['name', 'type1', 'type2', 'abilities', 'generation']
 
   
