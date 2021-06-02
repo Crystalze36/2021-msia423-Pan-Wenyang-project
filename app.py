@@ -1,7 +1,10 @@
 import traceback
 import logging.config
+
 from flask import Flask
-from flask import render_template, request, redirect, url_for
+from flask import render_template, request
+
+from src.manage_pokemon import PokemonManager, Pokemon
 
 # Initialize the Flask application
 app = Flask(__name__, template_folder="app/templates", static_folder="app/static")
@@ -16,44 +19,29 @@ logger = logging.getLogger(app.config["APP_NAME"])
 logger.debug('Web app log')
 
 # Initialize the database session
-from src.add_songs import Tracks, TrackManager
-track_manager = TrackManager(app)
+pokemon_manager = PokemonManager(app)
+
 
 @app.route('/')
-def index():
-    """Main view that lists songs in the database.
-
-    Create view into index page that uses data queried from Track database and
-    inserts it into the msiapp/templates/index.html template.
-
-    Returns: rendered html template
-
-    """
-
-    try:
-        tracks = track_manager.session.query(Tracks).limit(app.config["MAX_ROWS_SHOW"]).all()
-        logger.debug("Index page accessed")
-        return render_template('index.html', tracks=tracks)
-    except:
-        traceback.print_exc()
-        logger.warning("Not able to display tracks, error page returned")
-        return render_template('error.html')
+def form():
+    return render_template('form.html')
 
 
-@app.route('/add', methods=['POST'])
-def add_entry():
-    """View that process a POST with new song input
-
-    :return: redirect to index page
-    """
-
-    try:
-        track_manager.add_track(artist=request.form['artist'], album=request.form['album'], title=request.form['title'])
-        logger.info("New song added: %s by %s", request.form['title'], request.form['artist'])
-        return redirect(url_for('index'))
-    except:
-        logger.warning("Not able to display tracks, error page returned")
-        return render_template('error.html')
+@app.route('/', methods=['POST'])
+def data():
+    if request.method == 'POST':
+        user_input = request.form.to_dict()['pokemon_name']
+        user_input = str(user_input).lower()
+        try:
+            pokemons = pokemon_manager.session.query(Pokemon).filter_by(input=user_input).limit(
+                app.config["MAX_ROWS_SHOW"]).all()
+            if len(pokemons) == 0:
+                return render_template('not_found.html', user_input=user_input)
+            return render_template('index.html', pokemons=pokemons, user_input=user_input)
+        except:
+            traceback.print_exc()
+            logger.warning("Not able to display tracks, error page returned")
+            return render_template('error.html')
 
 
 if __name__ == '__main__':
