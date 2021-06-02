@@ -46,3 +46,11 @@ kill-app-local:
 
 aws-iden:
 	aws sts get-caller-identity
+
+data/sample/pokemon.csv: run_s3.py
+	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
+		-e AWS_ACCESS_KEY_ID \
+		-e AWS_SECRET_ACCESS_KEY \
+		pokemon_data run_s3.py --download --local_path=data/sample/pokemon.csv --s3_path=s3://2021-msia423-wenyang-pan/raw/pokemon.csv
+
+s3-raw: data/sample/pokemon.csv
