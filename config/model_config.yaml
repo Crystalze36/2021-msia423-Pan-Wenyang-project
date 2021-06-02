@@ -1,0 +1,20 @@
+preprocess:
+  scale_df:
+    features: ['sp_attack', 'sp_defense', 'hp', 'attack', 'defense', 'speed']
+  save_df: 
+    output_path: data/data_scale.csv
+model:
+  get_a_mod_list_and_dict:
+    cluster_range: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    seed: 10
+  cluster_selection_plot:
+    cluster_range: [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+    output_path: figures/cluster_selection.png
+  save_model:
+    best_num: '6'
+    output_path: models/kmeans.joblib
+
+
+  
+
+    

@@ -54,3 +54,13 @@ data/sample/pokemon.csv: run_s3.py
 		pokemon_data run_s3.py --download --local_path=data/sample/pokemon.csv --s3_path=s3://2021-msia423-wenyang-pan/raw/pokemon.csv
 
 s3-raw: data/sample/pokemon.csv
+
+data/data_scale.csv: run_model.py config/model_config.yaml
+	python run_model.py preprocess --input=data/sample/pokemon.csv --config=config/model_config.yaml
+	
+preprocess: data/data_scale.csv
+
+models/kmeans.joblib data/cluster_selection.png: run_model.py config/model_config.yaml
+	python run_model.py train --input=data/data_scale.csv --config=config/model_config.yaml
+	
+train: models/kmeans.joblib data/cluster_selection.png
