@@ -66,7 +66,7 @@ models/kmeans.joblib data/cluster_selection.png: run_model.py config/model_confi
 train: models/kmeans.joblib data/cluster_selection.png
 
 data/results.csv: run_model.py config/model_config.yaml
-	python run_model.py recommend --config=config/model_config.yaml
+	python run_model.py recommend --input=data/sample/pokemon.csv --config=config/model_config.yaml
 
 recommend: data/results.csv
   

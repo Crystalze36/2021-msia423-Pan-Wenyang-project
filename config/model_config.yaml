@@ -15,7 +15,6 @@ model:
     output_path: models/kmeans.joblib
 recommend:
   append_cluster_and_name:
-    raw_path: data/sample/pokemon.csv
     scale_path: data/data_scale.csv 
     model_path: models/kmeans.joblib
   generate_recommendation:
@@ -23,6 +22,7 @@ recommend:
     num_clusters: 6
     k: 11
     output_path: data/results.csv
+    display_features: ['name', 'type1', 'type2', 'abilities', 'generation']
 
   
 

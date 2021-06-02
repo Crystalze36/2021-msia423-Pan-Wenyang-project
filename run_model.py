@@ -53,12 +53,9 @@ if __name__ == '__main__':
         save_model(mod_dict, **config['model']['save_model'])
 
     elif args.step == 'recommend':
+        df_raw = pd.read_csv(args.input)
         recommend_config = config['recommend']
-        df_prepared = append_cluster_and_name(**recommend_config['append_cluster_and_name'])
-        generate_recommendation(df_prepared, **recommend_config['generate_recommendation'])
-
-# %% experiment
-import pandas as pd
-df1 = pd.read_csv('data/results.csv')
-df2 = pd.read_csv('data/result_notebook.csv')
-pd.testing.assert_frame_equal(df1, df2)
+        df_prepared = append_cluster_and_name(
+            df_raw, **recommend_config['append_cluster_and_name'])
+        generate_recommendation(df_prepared, df_raw,
+                                **recommend_config['generate_recommendation'])
