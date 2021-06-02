@@ -13,7 +13,16 @@ model:
   save_model:
     best_num: '6'
     output_path: models/kmeans.joblib
-
+recommend:
+  append_cluster_and_name:
+    raw_path: data/sample/pokemon.csv
+    scale_path: data/data_scale.csv 
+    model_path: models/kmeans.joblib
+  generate_recommendation:
+    features: ['sp_attack', 'sp_defense', 'hp', 'attack', 'defense', 'speed']
+    num_clusters: 6
+    k: 11
+    output_path: data/results.csv
 
   
 

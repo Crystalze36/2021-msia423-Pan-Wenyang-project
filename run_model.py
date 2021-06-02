@@ -1,11 +1,13 @@
 import logging
 import argparse
+from src.recommend import append_cluster_and_name
 
 import yaml
 import pandas as pd
 
 from src.preprocess import scale_df, save_df
 from src.model import get_a_mod_list_and_dict, cluster_selection_plot, save_model
+from src.recommend import append_cluster_and_name, generate_recommendation
 
 logging.basicConfig(format='%(name)-12s %(levelname)-8s %(message)s',
                     level=logging.INFO)
@@ -19,7 +21,7 @@ if __name__ == '__main__':
     parser.add_argument('step',
                         default='test',
                         help='Which step to run',
-                        choices=['preprocess', 'train'])
+                        choices=['preprocess', 'train', 'recommend'])
 
     parser.add_argument('--input',
                         '-i',
@@ -42,9 +44,21 @@ if __name__ == '__main__':
         df_scale = scale_df(df_raw, **config['preprocess']['scale_df'])
         save_df(df_scale, **config['preprocess']['save_df'])
 
-
     elif args.step == 'train':
         df_prepared = pd.read_csv(args.input)
-        mod_dict, mod_list =  get_a_mod_list_and_dict(df_prepared, **config['model']['get_a_mod_list_and_dict'])
-        cluster_selection_plot(df_prepared, mod_list, **config['model']['cluster_selection_plot'])
+        mod_dict, mod_list = get_a_mod_list_and_dict(
+            df_prepared, **config['model']['get_a_mod_list_and_dict'])
+        cluster_selection_plot(df_prepared, mod_list,
+                               **config['model']['cluster_selection_plot'])
         save_model(mod_dict, **config['model']['save_model'])
+
+    elif args.step == 'recommend':
+        recommend_config = config['recommend']
+        df_prepared = append_cluster_and_name(**recommend_config['append_cluster_and_name'])
+        generate_recommendation(df_prepared, **recommend_config['generate_recommendation'])
+
+# %% experiment
+import pandas as pd
+df1 = pd.read_csv('data/results.csv')
+df2 = pd.read_csv('data/result_notebook.csv')
+pd.testing.assert_frame_equal(df1, df2)
