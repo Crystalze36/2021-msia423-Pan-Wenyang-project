@@ -11,6 +11,16 @@ logger = logging.getLogger(__name__)
 
 def append_cluster_and_name(df_raw: pd.DataFrame, scale_path: str,
                             model_path: str) -> pd.DataFrame:
+    """Add Pokemon name and assigned cluster to the preprocessed dataframe
+
+    Args:
+        df_raw (pd.DataFrame): the raw input dataframe
+        scale_path (str): the path that stores the preprocess dataframe
+        model_path (str): the path that saves the fitted model
+
+    Returns:
+        df_prepared (pd.DataFrame): preproessed dataframe with name and cluster attached
+    """
     df_scale = pd.read_csv(scale_path)
     mod = joblib.load(model_path)
 
@@ -25,8 +35,7 @@ def append_cluster_and_name(df_raw: pd.DataFrame, scale_path: str,
 
 
 def filter_by_cluster(df: pd.DataFrame, cluster_idx: int) -> pd.DataFrame:
-    df_one_cluster = df.query('cluster_label == @cluster_idx').reset_index(
-        drop=True)
+    df_one_cluster = df.query('cluster_label == @cluster_idx').reset_index(drop=True)
     logger.debug('Cluster %d has %d observations', cluster_idx,
                  df_one_cluster.shape[0])
     return df_one_cluster
@@ -55,9 +64,9 @@ def get_mapping_to_df(df_one_cluster: pd.DataFrame,
     int2str = df_one_cluster['name'].to_dict()
 
     # Adapted from: https://stackoverflow.com/questions/16992713/translate-every-element-in-numpy-array-according-to-key
-    map_cloest_info = np.vectorize(int2str.get)(closest_info)
+    map_closest_info = np.vectorize(int2str.get)(closest_info)
 
-    df_info = pd.DataFrame(map_cloest_info,
+    df_info = pd.DataFrame(map_closest_info,
                            columns=['input'] +
                            [f'rec{i}' for i in range(1, 11)])
     return df_info
@@ -104,8 +113,8 @@ def generate_recommendation(df: pd.DataFrame, df_raw: pd.DataFrame,
     result = []
     for i in range(0, num_clusters):
         df_one_clus = filter_by_cluster(df, i)
-        cloest_info = closest_k_in_cluster(df_one_clus, features, k)
-        df_info = get_mapping_to_df(df_one_clus, cloest_info)
+        closet_info = closest_k_in_cluster(df_one_clus, features, k)
+        df_info = get_mapping_to_df(df_one_clus, closet_info)
         result.append(df_info)
     df_result = pd.concat(result, axis=0)
     df_result_long = to_long(df_result)
