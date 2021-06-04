@@ -234,7 +234,7 @@ Then when you run `make create-db-local`, the engine string will be set to `sqli
 
 #### Add information to the Databases Locally
 
-You can ingest the recommendation result to the local database with the following command. Note that this command requires you have already created the database locally.
+You can ingest the recommendation result to the local database with the following command. Note that this command requires you have already created the database locally. Note that a unique constraint was set to the pair of two columns - `input` and `recommendation`. Thus, you might receive unique constraint errors if you insert duplicate pairs into the database.
 
 ```bash
 make ingest-to-db
@@ -304,7 +304,7 @@ make create-db
 
 #### Add Information to the Databases Remotely
 
-Similar to the this section in the local database, this command ingest a csv file into the table.  The `SQLALCHEMY_DATABASE_URI` variable again determines the engine string for the database. See [this section](#add-information-to-the-databases-locally) above about how to configure the path of the csv file.
+Similar to the this section in the local database, this command ingest a csv file into the table.  The `SQLALCHEMY_DATABASE_URI` variable again determines the engine string for the database. Note that a unique constraint was set to the pair of two columns - `input` and `recommendation`. Thus, you might receive unique constraint errors if you insert duplicate pairs into the database. See [this section](#add-information-to-the-databases-locally) above about how to configure the path of the csv file if you don't want to use the default for some reason. Note that this command might take few minutes to complete.
 
 ```bash
 make ingest-to-db
