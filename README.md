@@ -133,14 +133,11 @@ The dataset used for this app comes from Kaggle. To download the data, you can g
 
 #### [Optional] Upload the raw data to S3
 
-<details>     
-  <summary>Details</summary>     
-  To upload the data to S3 with docker, you can run the following command. You need to specify your local data path and s3 data path by replacing the `{your_local_path}` and `{your_s3_path}` below. The default `S3_PATH` is `'s3://2021-msia423-wenyang-pan/raw/pokemon.csv'`and the default `LOCAL_PATH` is `data/raw/pokemon.csv`.
-  ```bash
-  make s3-upload LOCAL_PATH={your_local_path} S3_PATH={your_s3_path}
-  ```
-</details>
 
+ To upload the data to S3 with docker, you can run the following command. You need to specify your local data path and s3 data path by replacing the `{your_local_path}` and `{your_s3_path}` below. The default `S3_PATH` is `'s3://2021-msia423-wenyang-pan/raw/pokemon.csv'`and the default `LOCAL_PATH` is `data/raw/pokemon.csv`.
+```bash
+make s3-upload LOCAL_PATH={your_local_path} S3_PATH={your_s3_path}
+```
 ## Model Pipeline
 
 ### Whole Model Pipeline
