@@ -324,7 +324,7 @@ show tables;
 
 ### Launch with Established Database
 
-You already ingest the recommendation results into the database as described above. You should be able to launch the app with the following command.
+You already ingest the recommendation results into the database as described above. You should be able to launch the app with the following command. Note that the `SQLALCHEMY_DATABASE_URI` environment variable will determine which database the app connects to. 
 
 ```bash
 make docker-app-local
