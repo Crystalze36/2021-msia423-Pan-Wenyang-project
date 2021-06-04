@@ -234,7 +234,7 @@ make ingest-to-db-local
 
 #### Examine the Added Information in Local
 
-If you create the database locally, you can view your result by using any sqlite client, such as [DB Browser](https://sqlitebrowser.org/), to open the `.db` file created after running the `run_rds.py` file.  
+If you create the database locally, you can view your result by using any sqlite client, such as [DB Browser](https://sqlitebrowser.org/), to open the `.db` file created after running the commands above.  
 
 ### Remote Database Connection
 
@@ -280,9 +280,7 @@ You can create a new databases with the following command. By default, the scrip
 make create-db
 ```
 
-#### Add Information to the Databases
-
-You can add information about a Pokemon with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`. The default added Pokemon is "Charizard", with "fire" as type1 and "flying" as type2. Note that the database created from the command above does not allow duplicate names. Thus, you might receive an error message if you try to insert a pokemon with same name twice.
+#### Add Information to the Databases d
 
 ```bash
 make ingest-to-db
