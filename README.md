@@ -117,17 +117,41 @@ export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
 
 ### Docker Image :whale:
 
+This project relies on two Docker image to run the command.  You can build these two images with the following command.
+
+```bash
+make image-data
+make image-app
+```
+
++ The `make image-data` will produce a Docker image called `pokemon_data`, which are used to get the raw data, run the model pipeline, and interact with database. 
++ The `make image-app` will produce a Docker image called `pokemon`, which are used to launch the flask app. 
+
+## Data Source
+
+The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. Because the dataset is relatively small, we also save a copy in `data/raw/pokemon.csv`. Another copy is also uploaded to s3 and we will describe how to download the data from s3. If you want to upload this data to your own S3 bucket,  see this optional section below.
+
+#### [Optional] Upload the raw data to S3
+
+<details>     
+  <summary>Details</summary>     
+  To upload the data to S3 with docker, you can run the following command. You need to specify your local data path and s3 data path by replacing the `{your_local_path}` and `{your_s3_path}` below. The default `S3_PATH` is `'s3://2021-msia423-wenyang-pan/raw/pokemon.csv'`and the default `LOCAL_PATH` is `data/raw/pokemon.csv`.
+  ```bash
+  make s3-upload LOCAL_PATH={your_local_path} S3_PATH={your_s3_path}
+  ```
+</details>
+
 ## Model Pipeline
-
-You will need to build a Docker image to interact with this data acquisition steps. You can use the following command to build the docker image for these data acquisition steps. You can use it to do both the S3 and the Database interaction.
-
-```
-docker build -f Dockerfile_data -t pokemon_data .
-```
 
 ### Whole Model Pipeline
 
+You can run the whole model pipeline with the following the command.
 
+```bash
+make model-all
+```
+
+This command will run the whole model pipeline, including downloading the raw data from s3, preprocessing the data, training the model and generating the recommendation results. The final output is stored in `data/final/results.csv`.
 
 ### Raw Data Source
 

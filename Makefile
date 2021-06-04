@@ -1,5 +1,8 @@
 .PHONY: image-app clean-image clean-container mysql-it create-db ingest-to-db image-data image-app docker-app-local kill-app-local aws-iden
 
+S3_PATH = s3://2021-msia423-wenyang-pan/raw/pokemon.csv
+LOCAL_PATH = data/raw/pokemon.csv
+
 clean-image:
 	docker image prune
 
@@ -47,11 +50,17 @@ kill-app-local:
 aws-iden:
 	aws sts get-caller-identity
 
+s3-upload:
+	docker run \
+		-e AWS_ACCESS_KEY_ID \
+		-e AWS_SECRET_ACCESS_KEY \
+		pokemon_data run_s3.py --local_path=${LOCAL_PATH} --s3_path=${S3_PATH}
+
 data/raw/pokemon.csv: run_s3.py
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		-e AWS_ACCESS_KEY_ID \
 		-e AWS_SECRET_ACCESS_KEY \
-		pokemon_data run_s3.py --download --local_path=data/raw/pokemon.csv --s3_path=s3://2021-msia423-wenyang-pan/raw/pokemon.csv
+		pokemon_data run_s3.py --download --local_path=${LOCAL_PATH} --s3_path=${S3_PATH}
 
 s3-raw: data/raw/pokemon.csv
 
