@@ -86,7 +86,8 @@ model-all: s3-raw preprocess train recommend
 .PHONY: docker-app-local kill-app-local
 
 docker-app-local:
-	docker run -p 5000:5000 --name test pokemon
+	docker run -e SQLALCHEMY_DATABASE_URI \
+		-p 5000:5000 --name test pokemon
 
 kill-app-local:
 	docker kill test

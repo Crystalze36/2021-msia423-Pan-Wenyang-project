@@ -21,6 +21,8 @@ logger.debug('Web app log')
 # Initialize the database session
 pokemon_manager = PokemonManager(app)
 
+logger.info('The database dialect is %s', app.config['SQLALCHEMY_DATABASE_URI'].split(':')[0])
+
 
 @app.route('/')
 def form():
