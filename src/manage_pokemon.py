@@ -73,30 +73,6 @@ class PokemonManager:
         """
         self.session.close()
 
-    def add_pokemon_rec(self, name: str, the_rank: int, rec: str,
-                        type1: str, type2: str, abilities: str,
-                        generation: int, learn_more: str) -> None:
-        """Seeds an existing database with additional Pokemons.
-        Args:
-            name (str): name of the pokemon
-            the_rank (int):
-            rec (str):
-            type1 (str): the first type of that pokemon
-            type2 (str): the second type of that pokemon
-            abilities (str):
-            generation (int):
-            learn_more (str):
-        Returns:None
-        """
-
-        session = self.session
-        pokemon = Pokemon(input=name, the_rank=the_rank, recommendation=rec,
-                          type1=type1, type2=type2, abilities=abilities,
-                          generation=generation, learn_more=learn_more)
-        session.add(pokemon)
-        session.commit()
-        logger.info(f"Pokemon {name} with {rec} was added to the database")
-
     def add_pokemon_rec_df(self, input_path: str) -> None:
 
         session = self.session

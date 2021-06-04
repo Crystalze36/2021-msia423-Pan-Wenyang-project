@@ -18,14 +18,6 @@ if __name__ == '__main__':
     sb_create.add_argument("--engine_string", default=SQLALCHEMY_DATABASE_URI,
                            help="SQLAlchemy connection URI for database")
 
-    # Sub-parser for ingesting new data
-    sb_ingest = subparsers.add_parser("ingest", description="Add data to database")
-    sb_ingest.add_argument("--name", default="Charizard", help="Name of Pokemon to be added")
-    sb_ingest.add_argument("--type1", default="fire", help="Type 1 of the added Pokemon")
-    sb_ingest.add_argument("--type2", default="flying", help="Type 2 of the added Pokemon")
-    sb_ingest.add_argument("--engine_string", default=SQLALCHEMY_DATABASE_URI,
-                           help="SQLAlchemy connection URI for database")
-
     # Sub-parser for ingesting all data from a csv
     sb_ingest = subparsers.add_parser("ingest-csv", description="Add data to database")
     sb_ingest.add_argument("--input_path", default="data/result.csv", help="Name of Pokemon to be added")
