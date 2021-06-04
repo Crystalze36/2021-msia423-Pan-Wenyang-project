@@ -95,7 +95,7 @@ To determine the success of the app from a business perspective, we can measure 
 
 
 
-## Setup
+## Setup :stars:
 
 ### Software Requirements
 
@@ -164,9 +164,9 @@ The dataset used for this app comes from Kaggle. To download the data, you can g
 ```bash
 make s3-upload LOCAL_PATH={your_local_path} S3_PATH={your_s3_path}
 ```
-## Model Pipeline
+## Model Pipeline :robot:
 
-### Whole Model Pipeline :robot:
+### Whole Model Pipeline 
 
 You can run the whole model pipeline with the following the command.
 
@@ -216,20 +216,34 @@ You can also define the absolute path with four `////`, for example:
 engine_string = 'sqlite:////Users/martinpan/Repos/2021-msia423-wenyang-pan/data/pokemons.db'
 ```
 
-#### Create Database
+#### Create Database Locally
 
 You can create the database locally with the following command. 
 
 ```bash
-make create-db-local
+make create-db
 ```
 
-#### Add information to the Databases
+By default, the sqlite engine string is `sqlite:///data/msia423_pokemons.db`. You can configure your own sqlite engine by setting the environment variable `SQLALCHEMY_DATABASE_URI`. For example, you can do the following.
+
+```bash
+export SQLALCHEMY_DATABASE_URI = "sqlite:///data/msia423_pokemons_haha.db"
+```
+
+Then when you run `make create-db-local`, the engine string will be set to `sqlite:///data/msia423_pokemons_haha.db`
+
+#### Add information to the Databases Locally
 
 You can ingest the recommendation result to the local database with the following command. Note that this command requires you have already created the database locally.
 
 ```bash
-make ingest-to-db-local
+make ingest-to-db
+```
+
+By default, this code ingests the csv file located in `data/final/results.csv`. If you need to specify an alternative data path, you can do the following by replacing the `{your_data_path}` below.
+
+```
+make ingest-to-db FINAL_DATA_PATH={your_data_path}
 ```
 
 #### Examine the Added Information in Local
@@ -259,28 +273,38 @@ If succeed, you should be able to enter an interactive mysql session and you can
 
 #### Change Database Encoding 
 
+Because some name of Pokemons contain special characters, you will need to change the encoding of the mysql database to utf8. 
+
+You can check your current encoding with the following command. Note that you need to change `msia423_pokemons` to your own schema name.
+
 ```sql
 SELECT default_character_set_name FROM information_schema.SCHEMATA 
 WHERE schema_name = "msia423_pokemons";
 ```
 
+Now you can change the encoding for the whole database with following command. Again, you need to change `msia423_pokemons` to your own database name.
+
 ```sql
 ALTER DATABASE `msia423_pokemons` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 ```
+
+Alternatively, you can change the encoding for a specific table in the database. You need to change `msia423_pokemons.pokemons` to your own table name.
 
 ```sql
 ALTER TABLE msia423_pokemons.pokemons CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 ```
 
-#### Create Databases 
+#### Create Databases Remotely
 
-You can create a new databases with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`.
+You can create a new database with the following command. Note that the engine string is configured by the `SQLALCHEMY_DATABASE_URI` environment variable. You should specify this variable to decide where to create the database.
 
 ```bash
 make create-db
 ```
 
-#### Add Information to the Databases d
+#### Add Information to the Databases Remotely
+
+Similar to the this section in the local database, this command ingest a csv file into the table.  The `SQLALCHEMY_DATABASE_URI` variable again determines the engine string for the database. See [this section](#add-information-to-the-databases-locally) above about how to configure the path of the csv file.
 
 ```bash
 make ingest-to-db
@@ -296,7 +320,7 @@ use <your_target_database_name>;
 show tables; 
 ```
 
-## Launch App
+## Launch the App :tada:
 
 
 

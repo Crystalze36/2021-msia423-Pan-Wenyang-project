@@ -24,7 +24,7 @@ aws-iden:
 	aws sts get-caller-identity
 
 # Database
-.PHONY: mysql-it create-db ingest-to-db create-db-local ingest-to-db-local
+.PHONY: mysql-it create-db ingest-to-db
 
 mysql-it:
 	docker run -it --rm \
@@ -34,26 +34,16 @@ mysql-it:
 		-u$$MYSQL_USER \
 		-p$$MYSQL_PASSWORD
 
-
-create-db-local:
-	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
-		-e SQLALCHEMY_DATABASE_URI \
-		pokemon_data run_rds.py create_db
-
-ingest-to-db-local:
-	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
-		-e SQLALCHEMY_DATABASE_URI \
-		pokemon_data run_rds.py ingest-csv --input_path=${FINAL_DATA_PATH}
-
 create-db:
-	docker run -it \
+	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		-e SQLALCHEMY_DATABASE_URI \
 		pokemon_data run_rds.py create_db
 
 ingest-to-db:
-	docker run -it \
+	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		-e SQLALCHEMY_DATABASE_URI \
 		pokemon_data run_rds.py ingest-csv --input_path=${FINAL_DATA_PATH}
+
 
 # Model Pipeline
 .PHONY: s3-upload, s3-raw, preprocess, train, recommend, model-all
