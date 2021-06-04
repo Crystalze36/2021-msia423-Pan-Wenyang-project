@@ -115,6 +115,32 @@ export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
 
 #### RDS Credential
 
+##### Database Connection URI
+
+You need to define an environment variable call `SQLALCHEMY_DATABASE_URI` to create database and ingest data into the remote database. The format for this URI is described below.  
+
+```bash
+export SQLALCHEMY_DATABASE_URI = "YOUR_DATABASE_URL"
+```
+
+A SQLAlchemy database connection is defined by a string with the following format:
+
+`dialect+driver://username:password@host:port/database`
+
+The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). 
+
+##### Database Information 
+
+The URI above should be sufficient to run most of docker commands in this project. However, as we will discuss later, we need to be able to enter the interactive session for the remote mysql database. Thus, you also need to define these environment variables. Note that you need to replace these with your actual connection credentials. 
+
+```bash
+export MYSQL_USER="YOUR_SQL_USER_NAME"
+export MYSQL_PASSWORD="YOUR_SQL_PASSWORD"
+export MYSQL_HOST="YOUR_SQL_HOST"
+export MYSQL_PORT="YOUR_SQL_PORT"
+export MYSQL_DATABASE="YOUR_DATABASE_NAME"
+```
+
 ### Docker Image :whale:
 
 This project relies on two Docker image to run the command.  You can build these two images with the following command.
@@ -140,7 +166,7 @@ make s3-upload LOCAL_PATH={your_local_path} S3_PATH={your_s3_path}
 ```
 ## Model Pipeline
 
-### Whole Model Pipeline
+### Whole Model Pipeline :robot:
 
 You can run the whole model pipeline with the following the command.
 
@@ -172,33 +198,9 @@ You can generate the recommendation results with `make recommend`, which will st
 
 ## Store Results in Database
 
-### Database
+### Local Database configuration 
 
-#### Create the Database
-
-To create the database in the location configured in `config.py` run: 
-
-`python run_rds.py create_db --engine_string=<engine_string>`
-
-By default, `python run.py create_db` creates a database at `sqlite:///data/pokemons.db`. Note that you can also change the `engine_string` by changing the content `<engine_string>` above or set an environment variable `SQLALCHEMY_DATABASE_URI`.
-
-#### Adding pokemons 
-
-To add pokemons to the database:
-
-`python run_rds.py ingest --engine_string=<engine_string> --name=<NAME> --type1=<TYPE1> --type2=<TYPE2>`
-
-By default, `python run_rds.py ingest` adds *Charizard* with type1 fire and type2 flying to the SQLite database located in `sqlite:///data/pokemons.db`.
-
-#### Note on engine_string
-
-A SQLAlchemy database connection is defined by a string with the following format:
-
-`dialect+driver://username:password@host:port/database`
-
-The `+dialect` is optional and if not provided, a default is used. For a more detailed description of what `dialect` and `driver` are and how a connection is made, you can see the documentation [here](https://docs.sqlalchemy.org/en/13/core/engines.html). 
-
-#### Local Database configuration 
+#### SQLite Path
 
 A local SQLite database can be created for development and local testing. It does not require a username or password and replaces the host and port with the path to the database file: 
 
@@ -211,89 +213,90 @@ The three `///` denote that it is a relative path to where the code is being run
 You can also define the absolute path with four `////`, for example:
 
 ```python
-engine_string = 'sqlite://////Users/martinpan/Repos/2021-msia423-wenyang-pan/data/pokemons.db'
+engine_string = 'sqlite:////Users/martinpan/Repos/2021-msia423-wenyang-pan/data/pokemons.db'
 ```
 
-#### Remote Database Connection
+#### Create Database
 
-##### Prerequisites
+You can create the database locally with the following command. 
+
+```bash
+make create-db-local
+```
+
+#### Add information to the Databases
+
+You can ingest the recommendation result to the local database with the following command. Note that this command requires you have already created the database locally.
+
+```bash
+make ingest-to-db-local
+```
+
+#### Examine the Added Information in Local
+
+If you create the database locally, you can view your result by using any sqlite client, such as [DB Browser](https://sqlitebrowser.org/), to open the `.db` file created after running the `run_rds.py` file.  
+
+### Remote Database Connection
+
+#### Prerequisites
 
 In order to proceed with the following command, you need to satisfy the following requirements:
 
-1. You need to connect to the northwestern VPN
+1. You need to **connect to the northwestern VPN**.
 
-2. You should have the `pokemon_data` image built as described in the Docker Image section.
+3. You set up your environment variable correctly as describe in the [RDS Credential section](#rds-credential). 
 
-3. If you need to have connection variables set up in your environment variables. You should have 5 variables: `MYSQL_USER`, `MYSQL_PASSWORD`,  `MYSQL_HOST`,  `MYSQL_PORT `, `MYSQL_DATABASE`. Like we describe in the AWS credential section, you can setup your environment variables with the following. Note that you need to replace these with your actual connection credentials. 
 
-   ```bash
-   export MYSQL_USER="YOUR_SQL_USER_NAME"
-   export MYSQL_PASSWORD="YOUR_SQL_PASSWORD"
-   export MYSQL_HOST="YOUR_SQL_HOST"
-   export MYSQL_PORT="YOUR_SQL_PORT"
-   export MYSQL_DATABASE="YOUR_DATABASE_NAME"
-   ```
-
-##### Test Connection to Database
+#### Test Connection to Database
 
 You can run the following to test whether you can connect to the database. 
 
-```
-docker run -it --rm \
-    mysql:5.7.33 \
-    mysql \
-    -h$MYSQL_HOST \
-    -u$MYSQL_USER \
-    -p$MYSQL_PASSWORD
+```bash
+make mysql-it
 ```
 
 If succeed, you should be able to enter an interactive mysql session and you can show all databases you have with the command: `show databases;`.
 
-##### Create Databases 
+#### Change Database Encoding 
+
+```sql
+SELECT default_character_set_name FROM information_schema.SCHEMATA 
+WHERE schema_name = "msia423_pokemons";
+```
+
+```sql
+ALTER DATABASE `msia423_pokemons` DEFAULT CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+```
+
+```sql
+ALTER TABLE msia423_pokemons.pokemons CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+```
+
+#### Create Databases 
 
 You can create a new databases with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`.
 
-```
-docker run -it \
-    -e MYSQL_HOST \
-    -e MYSQL_PORT \
-    -e MYSQL_USER \
-    -e MYSQL_PASSWORD \
-    -e MYSQL_DATABASE \
-    pokemon_data run_rds.py create_db --engine_string={your_engine_string}
+```bash
+make create-db
 ```
 
-##### Add information to the Databases
+#### Add Information to the Databases
 
 You can add information about a Pokemon with the following command. By default, the script uses the engine string specified in `config/flaskconfig.py`. The default added Pokemon is "Charizard", with "fire" as type1 and "flying" as type2. Note that the database created from the command above does not allow duplicate names. Thus, you might receive an error message if you try to insert a pokemon with same name twice.
 
-```
-docker run -it \
-    -e MYSQL_HOST \
-    -e MYSQL_PORT \
-    -e MYSQL_USER \
-    -e MYSQL_PASSWORD \
-    -e MYSQL_DATABASE \
-    pokemon_data run_rds.py ingest --engine_string={your_engine_string} --name={pokemon name} --type1={1st type} --type2={2nd type}
+```bash
+make ingest-to-db
 ```
 
-#### Examine the Database
-
-##### Locally 
-
-If you create the database locally, you can view your result by using any sqlite client, such as [DB Browser](https://sqlitebrowser.org/), to open the `.db` file created after running the `run_rds.py` file. 
-
-##### Remote
+#### Examine the Added Information in Remote
 
 You can reenter the mysql interactive session by using the command under section [Test Connection to Database](#test-connection-to-database). Then you can type the following command to examine whether the table was created. Note that you need to replace `<your_target_database_name>` to the real database name. 
 
-```
+```sql
 show databases;
 use <your_target_database_name>;
 show tables; 
 ```
-
-
 
 ## Launch App
 
