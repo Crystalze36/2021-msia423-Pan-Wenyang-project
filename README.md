@@ -131,7 +131,7 @@ make image-app
 
 The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. Because the dataset is relatively small, we also save a copy in `data/raw/pokemon.csv`. Another copy is also uploaded to s3 and we will describe how to download the data from s3. If you want to upload this data to your own S3 bucket,  see this optional section below.
 
-#### [Optional] Upload the raw data to S3
+#### [Optional] Upload data to S3
 
 
  To upload the data to S3 with docker, you can run the following command. You need to specify your local data path and s3 data path by replacing the `{your_local_path}` and `{your_s3_path}` below. The default `S3_PATH` is `'s3://2021-msia423-wenyang-pan/raw/pokemon.csv'`and the default `LOCAL_PATH` is `data/raw/pokemon.csv`.
@@ -148,38 +148,27 @@ You can run the whole model pipeline with the following the command.
 make model-all
 ```
 
-This command will run the whole model pipeline, including downloading the raw data from s3, preprocessing the data, training the model and generating the recommendation results. The final output is stored in `data/final/results.csv`.
+This command will run the whole model pipeline, including downloading the raw data from s3, preprocessing the data, training the model and generating the recommendation results. The final output is stored in `data/final/results.csv`. Next, we will describe how to run each step in the in the pipeline and the location of artifacts produced from each step. Note that those four steps below need to be run sequentially. 
 
-### Raw Data Source
+### Download Raw Data from S3
 
-The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. Because the dataset is relatively small, we also save a copy in `data/raw/pokemon.csv`.
+You can download the data from s3 to local with the following command. You can specify your S3 path by replacing the `{your_s3_path}` below. The default `S3_PATH` is `'s3://2021-msia423-wenyang-pan/raw/pokemon.csv'`. This step will store the raw data to `data/raw/pokemon.csv`.
 
-#### Data path
-
-For both downloading data from s3 and uploading data to s3, you can specify your local data path and s3 data path by using the `--local_path` and `--s3_path` as shown below. The default `s3_path` is `'s3://2021-msia423-wenyang-pan/raw/pokemon.csv'`and the default local path is `data/sample/pokemon.csv`.
-
-#### Download Data from S3
-
-```
-python3 run_s3.py --download --local_path={your_local_path} --s3_path={your_s3_path}
+```bash
+make s3-raw S3_PATH={your_s3_path}
 ```
 
-#### Upload Data to S3
+### Preprocess Data
 
-```
-python3 run_s3.py --local_path={your_local_path} --s3_path={your_s3_path}
-```
+You can preprocess the data with `make preprocess`, which will store the preprocessed data to `data/interim/data_scale.csv`.
 
-##### Uploading with docker
+### Train Model
 
-You can also use docker to upload the data to s3 with the following command.
+You can train the model with `make train`, which will store the trained model to `models/kmeans.joblib` and the cluster selection plot to `figures/cluster_selection.png`.
 
-```
-docker run \
-	-e AWS_ACCESS_KEY_ID \
-	-e AWS_SECRET_ACCESS_KEY \
-	pokemon_data run_s3.py --local_path={your_local_path} --s3_path={your_s3_path}
-```
+### Generate Recommendation Results
+
+You can generate the recommendation results with `make recommend`, which will store the results in `data/final/results.csv`.
 
 ## Store Results in Database
 
