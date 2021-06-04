@@ -93,28 +93,18 @@ To determine the success of the app from a business perspective, we can measure 
 ├── requirements.txt                  <- Python package dependencies 
 ```
 
-## Software Requirements
+
+
+## Setup
+
+### Software Requirements
 
 + If you want to run the code in this project repo locally, you need to have python 3.6 or above. 
-+ In the Docker image, we use Python 3.6.9 as the running python version.
++ In the Docker image ​whale:, we use Python 3.6.9 as the running python version.
 
-## Data Acquisition
+### Environment Variable
 
-### Raw Data from Kaggle
-
-The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. Because the dataset is relatively small, we also save a copy in `data/sample/pokemon.csv`.
-
-### Docker Image
-
-If you want to use Docker to interact with this data acquisition steps. You can use the following command to build the docker image for these data acquisition steps. You can use it to do both the S3 and the Database interaction.
-
-```
-docker build -f Dockerfile_data -t pokemon_data .
-```
-
-### Interact with S3
-
-#### AWS Credential in Environment Variables
+#### AWS Credential
 
 You need to have two environment variables - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`  setup in your computer to run the following commands with S3. A simple way to do this run the following two lines in your terminal shell. Note that you need to replace "YOUR_ACCESS_KEY_ID" and "YOUR_SECRET_ACCESS_KEY" to your real id and secret access key. 
 
@@ -122,6 +112,26 @@ You need to have two environment variables - `AWS_ACCESS_KEY_ID` and `AWS_SECRET
 export AWS_ACCESS_KEY_ID="YOUR_ACCESS_KEY_ID"
 export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
 ```
+
+#### RDS Credential
+
+### Docker Image :whale:
+
+## Model Pipeline
+
+You will need to build a Docker image to interact with this data acquisition steps. You can use the following command to build the docker image for these data acquisition steps. You can use it to do both the S3 and the Database interaction.
+
+```
+docker build -f Dockerfile_data -t pokemon_data .
+```
+
+### Whole Model Pipeline
+
+
+
+### Raw Data Source
+
+The dataset used for this app comes from Kaggle. To download the data, you can go to this [website](https://www.kaggle.com/rounakbanik/pokemon) and click the Download button at the top of the page.    Note that you will need to register a Kaggle account in order to download dataset if you do not have one. Because the dataset is relatively small, we also save a copy in `data/raw/pokemon.csv`.
 
 #### Data path
 
@@ -149,6 +159,8 @@ docker run \
 	-e AWS_SECRET_ACCESS_KEY \
 	pokemon_data run_s3.py --local_path={your_local_path} --s3_path={your_s3_path}
 ```
+
+## Store Results in Database
 
 ### Database
 
@@ -270,4 +282,12 @@ show databases;
 use <your_target_database_name>;
 show tables; 
 ```
+
+
+
+## Launch App
+
+
+
+## Unit Test
 

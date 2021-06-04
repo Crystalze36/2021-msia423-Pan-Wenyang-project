@@ -20,7 +20,7 @@ recommend:
   generate_recommendation:
     features: ['sp_attack', 'sp_defense', 'hp', 'attack', 'defense', 'speed']
     num_clusters: 6
-    k: 11
+    k: 10
     output_path: data/final/results.csv
     display_features: ['name', 'type1', 'type2', 'abilities', 'generation']
 
