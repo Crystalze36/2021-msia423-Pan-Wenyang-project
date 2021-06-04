@@ -1,5 +1,6 @@
 S3_PATH = s3://2021-msia423-wenyang-pan/raw/pokemon.csv
 LOCAL_PATH = data/raw/pokemon.csv
+FINAL_DATA_PATH = data/final/results.csv
 
 # Docker Utility
 .PHONY: image-data image-app clean-image clean-container
@@ -23,7 +24,7 @@ aws-iden:
 	aws sts get-caller-identity
 
 # Database
-.PHONY: mysql-it create-db ingest-to-db
+.PHONY: mysql-it create-db ingest-to-db create-db-local ingest-to-db-local
 
 mysql-it:
 	docker run -it --rm \
@@ -33,23 +34,26 @@ mysql-it:
 		-u$$MYSQL_USER \
 		-p$$MYSQL_PASSWORD
 
+
+create-db-local:
+	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
+		-e SQLALCHEMY_DATABASE_URI \
+		pokemon_data run_rds.py create_db
+
+ingest-to-db-local:
+	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
+		-e SQLALCHEMY_DATABASE_URI \
+		pokemon_data run_rds.py ingest-csv --input_path=${FINAL_DATA_PATH}
+
 create-db:
 	docker run -it \
-		-e MYSQL_HOST \
-		-e MYSQL_PORT \
-		-e MYSQL_USER \
-		-e MYSQL_PASSWORD \
-		-e MYSQL_DATABASE \
+		-e SQLALCHEMY_DATABASE_URI \
 		pokemon_data run_rds.py create_db
 
 ingest-to-db:
 	docker run -it \
-		-e MYSQL_HOST \
-		-e MYSQL_PORT \
-		-e MYSQL_USER \
-		-e MYSQL_PASSWORD \
-		-e MYSQL_DATABASE \
-		pokemon_data run_rds.py ingest-csv
+		-e SQLALCHEMY_DATABASE_URI \
+		pokemon_data run_rds.py ingest-csv --input_path=${FINAL_DATA_PATH}
 
 # Model Pipeline
 .PHONY: s3-upload, s3-raw, preprocess, train, recommend, model-all
