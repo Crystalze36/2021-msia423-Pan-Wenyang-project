@@ -91,4 +91,5 @@ docker-app-local:
 kill-app-local:
 	docker kill test
 
-  
+# Theory of Everything
+launch-in-one: model-all create-db ingest-to-db docker-app-local

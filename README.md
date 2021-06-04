@@ -322,7 +322,33 @@ show tables;
 
 ## Launch the App :tada:
 
+### Launch with Established Database
 
+You already ingest the recommendation results into the database as described above. You should be able to launch the app with the following command.
+
+```bash
+make docker-app-local
+```
+
+Now you should be able to access the app at http://0.0.0.0:5000/ in your browser.
+
+This command runs the `pokeomn` image as a container named `test` and forwards the port 5000 from container to your laptop so that you can access the flask app exposed through that port. If `PORT` in `config/flaskconfig.py` is changed, this port should be changed accordingly (as should the `EXPOSE 5000` line in `app/Dockerfile`)
+
+### Launch from Scratch
+
+If you have only built the two docker images but do not run the model pipeline and set up the database, you can do all of the and launch the app with the following.
+
+```bash
+make launch-in-one
+```
+
+### Kill the container 
+
+Once finished with the app, you will need to kill the container. To do so: 
+
+```bash
+docker kill test 
+```
 
 ## Unit Test
 
