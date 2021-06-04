@@ -92,5 +92,12 @@ docker-app-local:
 kill-app-local:
 	docker kill test
 
+# Test
+.PHONY: test
+test:
+	docker run pokemon_data -m pytest
+
 # Theory of Everything
+.PHONY: launch-in-one
+
 launch-in-one: model-all create-db ingest-to-db docker-app-local
