@@ -1,6 +1,5 @@
-import logging
+import logging.config
 import argparse
-from src.recommend import append_cluster_and_name
 
 import yaml
 import pandas as pd
@@ -9,8 +8,7 @@ from src.preprocess import scale_df, save_df
 from src.model import get_a_mod_list_and_dict, cluster_selection_plot, save_model
 from src.recommend import append_cluster_and_name, generate_recommendation
 
-logging.basicConfig(format='%(name)-12s %(levelname)-8s %(message)s',
-                    level=logging.INFO)
+logging.config.fileConfig('config/logging/local.conf')
 logger = logging.getLogger('model-pipeline')
 
 if __name__ == '__main__':
