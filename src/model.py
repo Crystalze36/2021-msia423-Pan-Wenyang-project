@@ -2,6 +2,7 @@ import logging
 from typing import Dict, List, Tuple
 
 import joblib
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
@@ -25,6 +26,8 @@ def get_a_mod_list_and_dict(df: pd.DataFrame,
             mod_dict - a dictionary where each key is a str of the number of clusters, the value is the fitted value
             mod_list - a list of fitted models
     """
+    if (np.abs(df.select_dtypes('number').max().values > 10)).any():
+        logger.warning('Values larger than 10 appear to be too large. Did you standardize the data?')
     mod_dict = {}
     for k in cluster_range:
         mod = KMeans(n_clusters=k, random_state=seed).fit(df)
