@@ -17,6 +17,10 @@ def scale_df(df: pd.DataFrame, features: List) -> pd.DataFrame:
     Returns:
         df_scale (pd.DataFrame): a standardized dataframe with selected features
     """
+
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError(f"Provided argument df need to be pd.Dataframe, but now it is {type(df)}")
+
     std_scale = StandardScaler()
     df_scale = pd.DataFrame(std_scale.fit_transform(df[features]), columns=features)
     logger.info(f'The shape of the standardized data is {df_scale.shape}')
