@@ -45,6 +45,8 @@ def filter_by_cluster(df: pd.DataFrame, cluster_idx: int) -> pd.DataFrame:
 
 def swap_to_right(input_arr: np.ndarray, i: int) -> np.ndarray:
     """"Swap the first element that equals to i with the element index 0"""
+    if not isinstance(input_arr, np.ndarray):
+        raise TypeError(f'input_arr should be np.ndarray but now it is {type(input_arr)}')
     right_idx = np.where(input_arr == i)[0].item()
     input_arr[[0, right_idx]] = input_arr[[right_idx, 0]]
     return input_arr
