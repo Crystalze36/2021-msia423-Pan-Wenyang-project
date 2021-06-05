@@ -65,7 +65,7 @@ def closest_k_in_cluster(df_one_cluster: pd.DataFrame,
             and the rest of k elements are the index of closest elements
     """
     dist_mtx = pairwise_distances(df_one_cluster[features])
-    closest_k = np.argsort(dist_mtx)[:, :(k+1)]
+    closest_k = np.argsort(dist_mtx)[:, :(k + 1)]
     # Get rid of the case where two pokemons have exact same feature and thus mess up the ordering
     for i in range(closest_k.shape[0]):
         if closest_k[i][0] != i:
@@ -94,7 +94,7 @@ def get_mapping_to_df(df_one_cluster: pd.DataFrame,
 
     df_info = pd.DataFrame(map_closest_info,
                            columns=['input'] +
-                           [f'rec{i}' for i in range(1, (k+1))])
+                                   [f'rec{i}' for i in range(1, (k + 1))])
     return df_info
 
 
@@ -133,8 +133,8 @@ def merge_display(df_long: pd.DataFrame, df_raw: pd.DataFrame,
                         right_on='name',
                         how='inner')
     logger.debug(f'The shape after merging is {df_final.shape}')
-    df_final = df_final.drop('name', axis=1)\
-                       .sort_values(['input', 'the_rank'], ignore_index=True)
+    df_final = df_final.drop('name', axis=1) \
+        .sort_values(['input', 'the_rank'], ignore_index=True)
     return df_final
 
 
