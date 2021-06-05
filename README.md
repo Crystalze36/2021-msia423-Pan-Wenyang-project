@@ -352,3 +352,8 @@ docker kill test
 
 ## Unit Test
 
+Unit tests are implemented when appropriate for modules in this project. You can run these tests 
+with this command:
+```bash
+make test
+```
