@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.recommend import swap_to_right, filter_by_cluster, get_mapping_to_df
+from src.recommend import swap_to_right, filter_by_cluster, get_mapping_to_df, get_url
 
 
 def test_filter_by_cluster():
@@ -46,9 +46,28 @@ def test_get_mapping_to_df():
     df_test = get_mapping_to_df(df_in, closest_info_in, k_in)
     pd.testing.assert_frame_equal(df_test, df_true)
 
+
 def test_get_mapping_to_df_non_df():
     df_in = 'ha'
     closest_info_in = np.array([[1, 2, 0], [2, 1, 1]])
     k_in = 2
     with pytest.raises(TypeError):
         get_mapping_to_df(df_in, closest_info_in, k_in)
+
+
+def test_get_url():
+    df_in = pd.DataFrame([['ha', 'Pikachu'], ['hello', 'Charizard']],
+                         columns=['random', 'recommendation']
+                         )
+    df_true = pd.DataFrame([['ha', 'Pikachu', 'https://pokemondb.net/pokedex/Pikachu'],
+                            ['hello', 'Charizard', 'https://pokemondb.net/pokedex/Charizard']],
+                           columns=['random', 'recommendation', 'learn_more']
+                           )
+    df_test = get_url(df_in)
+    pd.testing.assert_frame_equal(df_test, df_true)
+
+
+def test_get_url_non_df():
+    df_in = 'I am not a Pandas Dataframe'
+    with pytest.raises(TypeError):
+        get_mapping_to_df(df_in)

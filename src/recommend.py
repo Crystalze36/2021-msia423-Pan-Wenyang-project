@@ -100,11 +100,6 @@ def get_mapping_to_df(df_one_cluster: pd.DataFrame,
     return df_info
 
 
-def get_url(name: str) -> str:
-    """Generate a url for a given Pokemon str"""
-    return f'https://pokemondb.net/pokedex/{name}'
-
-
 def to_long(df_result: pd.DataFrame) -> pd.DataFrame:
     """Change the dataframe from wide to long format and sort by input and the_rank column"""
     df_long = df_result.melt(id_vars=['input'],
@@ -140,9 +135,18 @@ def merge_display(df_long: pd.DataFrame, df_raw: pd.DataFrame,
     return df_final
 
 
+def get_url(df: pd.DataFrame, name_col: str = 'recommendation') -> pd.DataFrame:
+    """Generate a new column with the Pokemon's url in a dataframe"""
+    if not isinstance(df, pd.DataFrame):
+        raise TypeError(f"Provided argument df need to be pd.Dataframe, but now it is {type(df)}")
+
+    df['learn_more'] = df[name_col].apply(lambda x: f'https://pokemondb.net/pokedex/{x}')
+    logger.debug(f'The columns of this dataframe are {df.columns}')
+    return df
+
+
 def format_clean(df: pd.DataFrame) -> pd.DataFrame:
-    """Add a column with url for each Pokemon and clean the format for some columns"""
-    df['learn_more'] = df['recommendation'].apply(get_url)
+    """Clean the format for some columns in the dataframe"""
     df.abilities = df.abilities.str.replace('[^a-zA-Z0-9, -]', '', regex=True)
     df.input = df.input.str.lower()
     df.type2 = df.type2.fillna('None')
@@ -172,6 +176,7 @@ def generate_recommendation(df: pd.DataFrame, df_raw: pd.DataFrame,
     df_result = pd.concat(result, axis=0)
     df_result_long = to_long(df_result)
     df_result_merge = merge_display(df_result_long, df_raw, display_features)
+    df_result_merge = get_url(df_result_merge)
     df_final = format_clean(df_result_merge)
     df_final.to_csv(output_path, index=False)
     logger.info('The recommendation result is saved to %s', output_path)
