@@ -88,7 +88,15 @@ class PokemonManager:
         persist_list = []
         for data in data_list:
             persist_list.append(Pokemon(**data))
-        session.add_all(persist_list)
 
-        session.commit()
-        logger.info(f'{len(persist_list)} records were added to the table')
+        try:
+            session.add_all(persist_list)
+            session.commit()
+        except sqlalchemy.exc.OperationalError:
+            pass
+        except sqlalchemy.exc.IntegrityError:
+            my_message = ('Have you already inserted the same record into the database before? \n'
+                          'This database does not allow duplicate in the input-recommendation pair')
+            logger.error(f"{my_message} \n The original error message is: ", exc_info=True)
+        else:
+            logger.info(f'{len(persist_list)} records were added to the table')
