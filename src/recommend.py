@@ -151,7 +151,7 @@ def format_clean(df: pd.DataFrame) -> pd.DataFrame:
     """Clean the format for some columns in the dataframe"""
     df.abilities = df.abilities.str.replace('[^a-zA-Z0-9, -]', '', regex=True)
     df.input = df.input.str.lower()
-    # Fill na with 'None'q to better display
+    # Fill na with 'None' to better display
     df.type2 = df.type2.fillna('None')
     return df
 
