@@ -74,11 +74,18 @@ class PokemonManager:
         self.session.close()
 
     def add_pokemon_rec_df(self, input_path: str) -> None:
+        """
+        Add all the data in a csv file into the database
+        Args:
+            input_path: the path of the csv file
+        Returns: None
+        """
 
         session = self.session
-        persist_list = []
+        # Make the dataframe to a list of dictionaries to pass the data into the Pokemon class easily
         data_list = pd.read_csv(input_path).to_dict(orient='records')
 
+        persist_list = []
         for data in data_list:
             persist_list.append(Pokemon(**data))
         session.add_all(persist_list)
