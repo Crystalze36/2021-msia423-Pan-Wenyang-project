@@ -55,6 +55,7 @@ def cluster_selection_plot(df: pd.DataFrame,
     axs[0].plot(cluster_range, within_ss, color='royalblue')
     axs[1].plot(cluster_range, silhouette_list, color='green')
 
+    # Format x and y label in the plot
     for i in range(2):
         axs[i].set_xlabel('number of clusters')
     for idx, name in zip([0, 1, 2], ['inertia', 'silhouette score']):

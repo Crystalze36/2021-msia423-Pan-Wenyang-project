@@ -89,6 +89,7 @@ def get_mapping_to_df(df_one_cluster: pd.DataFrame,
     Returns:
         pd.DataFrame: records the k recommendations for each Pokemon
     """
+    # Create a dictionary where key is the integer index and value is the Pokemon name
     int2str = df_one_cluster['name'].to_dict()
 
     # Adapted from: https://stackoverflow.com/questions/16992713/translate-every-element-in-numpy-array-according-to-key
@@ -130,6 +131,7 @@ def merge_display(df_long: pd.DataFrame, df_raw: pd.DataFrame,
                         right_on='name',
                         how='inner')
     logger.debug(f'The shape after merging is {df_final.shape}')
+    # Drop name since it is the same as the recommendation column
     df_final = df_final.drop('name', axis=1) \
         .sort_values(['input', 'the_rank'], ignore_index=True)
     return df_final
@@ -149,6 +151,7 @@ def format_clean(df: pd.DataFrame) -> pd.DataFrame:
     """Clean the format for some columns in the dataframe"""
     df.abilities = df.abilities.str.replace('[^a-zA-Z0-9, -]', '', regex=True)
     df.input = df.input.str.lower()
+    # Fill na with 'None'q to better display
     df.type2 = df.type2.fillna('None')
     return df
 
@@ -168,15 +171,20 @@ def generate_recommendation(df: pd.DataFrame, df_raw: pd.DataFrame,
         output_path (str): the path to store the recommendation result
     """
     result = []
+    # Get the recommendation for each Pokemon in each cluster
     for i in range(0, num_clusters):
         df_one_clus = filter_by_cluster(df, i)
         closet_info = closest_k_in_cluster(df_one_clus, features, k)
         df_info = get_mapping_to_df(df_one_clus, closet_info, k)
         result.append(df_info)
     df_result = pd.concat(result, axis=0)
+
+    # Reshape the recommendation result and add necessary information for display
     df_result_long = to_long(df_result)
     df_result_merge = merge_display(df_result_long, df_raw, display_features)
     df_result_merge = get_url(df_result_merge)
+
+    # Clean the format and save the result
     df_final = format_clean(df_result_merge)
     df_final.to_csv(output_path, index=False)
     logger.info('The recommendation result is saved to %s', output_path)
