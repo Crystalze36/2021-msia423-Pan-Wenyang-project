@@ -62,19 +62,19 @@ data/raw/pokemon.csv: run_s3.py
 
 s3-raw: data/raw/pokemon.csv
 
-data/interim/data_scale.csv: run_model.py config/model_config.yaml
+data/interim/data_scale.csv: run_model.py config/model_config.yaml data/raw/pokemon.csv
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		pokemon_data run_model.py preprocess --input=data/raw/pokemon.csv --config=config/model_config.yaml
 
 preprocess: data/interim/data_scale.csv
 
-models/kmeans.joblib figures/cluster_selection.png: run_model.py config/model_config.yaml
+models/kmeans.joblib figures/cluster_selection.png: run_model.py config/model_config.yaml data/interim/data_scale.csv
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		pokemon_data  run_model.py train --input=data/interim/data_scale.csv --config=config/model_config.yaml
 
 train: models/kmeans.joblib figures/cluster_selection.png
 
-data/final/results.csv: run_model.py config/model_config.yaml
+data/final/results.csv: run_model.py config/model_config.yaml models/kmeans.joblib
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		pokemon_data  run_model.py recommend --input=data/raw/pokemon.csv --config=config/model_config.yaml
 
