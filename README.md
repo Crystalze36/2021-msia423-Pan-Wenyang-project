@@ -52,20 +52,22 @@ To determine the success of the app from a business perspective, we can measure 
 
 ```
 ├── README.md                         <- You are here
-├── api
+├── app
 │   ├── static/                       <- CSS, JS files that remain static
 │   ├── templates/                    <- HTML (or other code) that is templated and changes based on a set of inputs
 │   ├── boot.sh                       <- Start up script for launching app in Docker container.
-│   ├── Dockerfile                    <- Dockerfile for building image to run app  
+│   ├── Dockerfile_app                <- Dockerfile for building image to run app  
 │
 ├── config                            <- Directory for configuration files 
 │   ├── local/                        <- Directory for keeping environment variables and other local configurations that *do not sync** to Github 
 │   ├── logging/                      <- Configuration of python loggers
 │   ├── flaskconfig.py                <- Configurations for Flask API 
+│   ├── model_config.yaml             <- Configuration for model pipeline
 │
-├── data                              <- Folder that contains data used or generated. Only the external/ and sample/ subdirectories are tracked by git. 
-│   ├── external/                     <- External data sources, usually reference data,  will be synced with git
-│   ├── sample/                       <- Sample data used for code development and testing, will be synced with git
+├── data                              <- Folder that contains data used or generated, will be synced with git
+│   ├── raw/                          <- the raw Pokemon data
+│   ├── interim/                      <- the intermediate data generated during the model pipeline
+│   ├── external/                     <- the final data generated from the model pipeline; will be stored in database
 │
 ├── deliverables/                     <- Any white papers, presentations, final work products that are presented or delivered to a stakeholder 
 │
@@ -79,17 +81,17 @@ To determine the success of the app from a business perspective, we can measure 
 │   ├── archive/                      <- Develop notebooks no longer being used.
 │   ├── deliver/                      <- Notebooks shared with others / in final state
 │   ├── develop/                      <- Current notebooks being used in development.
-│   ├── template.ipynb                <- Template notebook for analysis with useful imports, helper functions, and SQLAlchemy setup. 
 │
 ├── reference/                        <- Any reference material relevant to the project
 │
-├── src/                              <- Source data for the project 
+├── src/                              <- Source module for the project 
 │
 ├── test/                             <- Files necessary for running model tests (see documentation below) 
 │
 ├── app.py                            <- Flask wrapper for running the model 
 ├── run_s3.py                         <- Download and Upload data from/to S3
 ├── run_rds.py                        <- Create and update table in RDS
+├── run_model.py                      <- Model pipeline and create recommendation results
 ├── requirements.txt                  <- Python package dependencies 
 ```
 
