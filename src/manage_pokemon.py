@@ -45,8 +45,15 @@ def create_db(engine_string: str) -> None:
     """
     engine = sqlalchemy.create_engine(engine_string)
 
-    Base.metadata.create_all(engine)
-    logger.info("Database created.")
+    try:
+        Base.metadata.create_all(engine)
+    except sqlalchemy.exc.OperationalError as e:
+        my_message = ('You might have connection error. Have you configured \n'
+                      'SQLALCHEMY_DATABASE_URI variable correctly and connect to Northwestern VPN?')
+        logger.error(f'The original error is: {e}')
+        logger.error(f"{my_message}")
+    else:
+        logger.info("Database created.")
 
 
 class PokemonManager:
@@ -93,7 +100,9 @@ class PokemonManager:
             session.add_all(persist_list)
             session.commit()
         except sqlalchemy.exc.OperationalError:
-            pass
+            my_message = ('You might have connection error. Have you configured \n'
+                          'SQLALCHEMY_DATABASE_URI variable correctly and connect to Northwestern VPN?')
+            logger.error(f"{my_message} \n The original error message is: ", exc_info=True)
         except sqlalchemy.exc.IntegrityError:
             my_message = ('Have you already inserted the same record into the database before? \n'
                           'This database does not allow duplicate in the input-recommendation pair')
