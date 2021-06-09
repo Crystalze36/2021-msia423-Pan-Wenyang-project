@@ -42,7 +42,7 @@ def data():
             return render_template('index.html', pokemons=pokemons, user_input=user_input)
         except:
             traceback.print_exc()
-            logger.warning("Not able to display tracks, error page returned")
+            logger.warning("Not able to display pokemons, error page returned")
             return render_template('error.html')
 
 
