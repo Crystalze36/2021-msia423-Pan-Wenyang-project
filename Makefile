@@ -94,6 +94,7 @@ kill-app-local:
 
 # Test
 .PHONY: test
+
 test:
 	docker run pokemon_data -m pytest
 
