@@ -99,6 +99,14 @@ test:
 	docker run pokemon_data -m pytest
 
 # Theory of Everything
-.PHONY: launch-in-one
+.PHONY: launch-in-one clean-all
 
 launch-in-one: model-all create-db ingest-to-db docker-app-local
+
+clean-all:
+	rm 'data/raw/pokemon.csv'
+	rm 'data/interim/data_scale.csv'
+	rm 'data/final/results.csv'
+	rm 'data/msia423_pokemons.db'
+	rm 'figures/cluster_selection.png'
+	rm 'models/kmeans.joblib'
