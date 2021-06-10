@@ -152,8 +152,8 @@ make image-data
 make image-app
 ```
 
-+ The `make image-data` will produce a Docker image called `pokemon_data`, which are used to get the raw data, run the model pipeline, and interact with database. 
-+ The `make image-app` will produce a Docker image called `pokemon`, which are used to launch the flask app. 
++ The `make image-data` will produce a Docker image called `pokemon_data_wpz3146`, which are used to get the raw data, run the model pipeline, and interact with database. 
++ The `make image-app` will produce a Docker image called `pokemon_wpz3146`, which are used to launch the flask app. 
 
 ## Data Source
 
