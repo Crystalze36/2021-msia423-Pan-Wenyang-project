@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.recommend import swap_to_right, filter_by_cluster, get_mapping_to_df, get_url
+from src.recommend import swap_to_right, filter_by_cluster, get_mapping_to_df, get_url, to_long, format_clean
 
 
 def test_filter_by_cluster():
@@ -71,3 +71,39 @@ def test_get_url_non_df():
     df_in = 'I am not a Pandas Dataframe'
     with pytest.raises(TypeError):
         get_mapping_to_df(df_in)
+
+
+def test_to_long():
+    df_in = pd.DataFrame([['ha', 'yes', 'no'], ['hi', 'haha', 'hahaha']],
+                         columns=['input', 'rec1', 'rec2'])
+    df_test = to_long(df_in)
+    df_true = pd.DataFrame(
+        [['ha', 1, 'yes'], ['ha', 2, 'no'], ['hi', 1, 'haha'], ['hi', 2, 'hahaha']],
+        columns=['input', 'the_rank', 'recommendation'])
+    pd.testing.assert_frame_equal(df_true, df_test)
+
+
+def test_to_long_non_df():
+    df_in = 'I am not a df'
+    with pytest.raises(AttributeError):
+        to_long(df_in)
+
+
+def test_format_clean():
+    df_in = pd.DataFrame([["['ha', 'superha']", "BALABALA", np.nan],
+                          ["['ka', 'superha']", "hey", 'FIRE!']],
+                         columns=['abilities', 'input', 'type2'])
+
+    df_test = format_clean(df_in)
+
+    df_true = pd.DataFrame([["ha, superha", "balabala", 'None'],
+                            ["ka, superha", "hey", 'FIRE!']],
+                           columns=['abilities', 'input', 'type2'])
+
+    pd.testing.assert_frame_equal(df_test, df_true)
+
+
+def test_format_clean_non_df():
+    df_in = 'I am not a df'
+    with pytest.raises(AttributeError):
+        format_clean(df_in)
