@@ -1,6 +1,7 @@
 import traceback
 import logging.config
 
+import sqlalchemy
 from flask import Flask
 from flask import render_template, request
 
@@ -40,7 +41,7 @@ def data():
             if len(pokemons) == 0:
                 return render_template('not_found.html', user_input=user_input)
             return render_template('index.html', pokemons=pokemons, user_input=user_input)
-        except:
+        except sqlalchemy.exc.OperationalError:
             traceback.print_exc()
             logger.warning("Not able to display pokemons, error page returned")
             return render_template('error.html')
