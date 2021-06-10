@@ -17,6 +17,17 @@ clean-image:
 clean-container:
 	docker rm $$(docker ps --filter status=exited -q)
 
+# File Utility
+.PHONY: clean-data
+
+clean-data:
+	rm 'data/raw/pokemon.csv'
+	rm 'data/interim/data_scale.csv'
+	rm 'data/final/results.csv'
+	rm 'data/msia423_pokemons.db'
+	rm 'figures/cluster_selection.png'
+	rm 'models/kmeans.joblib'
+
 # AWS
 .PHONY: aws-iden
 
@@ -87,6 +98,7 @@ model-all: s3-raw preprocess train recommend
 
 docker-app-local:
 	docker run -e SQLALCHEMY_DATABASE_URI \
+        --mount type=bind,source="$(shell pwd)",target=/app/ \
 		-p 5000:5000 --name test pokemon
 
 kill-app-local:
@@ -103,10 +115,4 @@ test:
 
 launch-in-one: model-all create-db ingest-to-db docker-app-local
 
-clean-all:
-	rm 'data/raw/pokemon.csv'
-	rm 'data/interim/data_scale.csv'
-	rm 'data/final/results.csv'
-	rm 'data/msia423_pokemons.db'
-	rm 'figures/cluster_selection.png'
-	rm 'models/kmeans.joblib'
+clean-all: clean-image clean-container clean-data
