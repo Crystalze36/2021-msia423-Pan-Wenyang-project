@@ -67,7 +67,7 @@ To determine the success of the app from a business perspective, we can measure 
 ├── data                              <- Folder that contains data used or generated, will be synced with git
 │   ├── raw/                          <- the raw Pokemon data
 │   ├── interim/                      <- the intermediate data generated during the model pipeline
-│   ├── external/                     <- the final data generated from the model pipeline; will be stored in database
+│   ├── final/                        <- the final data generated from the model pipeline; will be stored in database
 │
 ├── deliverables/                     <- Any white papers, presentations, final work products that are presented or delivered to a stakeholder 
 │
@@ -102,7 +102,7 @@ To determine the success of the app from a business perspective, we can measure 
 ### Software Requirements
 
 + If you want to run the code in this project repo locally, you need to have python 3.6 or above. 
-+ In the Docker image ​whale:, we use Python 3.6.9 as the running python version.
++ In the Docker image :whale:, we use Python 3.6.9 as the running python version.
 
 ### Environment Variable
 
@@ -122,7 +122,7 @@ export AWS_SECRET_ACCESS_KEY="YOUR_SECRET_ACCESS_KEY"
 You need to define an environment variable call `SQLALCHEMY_DATABASE_URI` to create database and ingest data into the remote database. The format for this URI is described below.  
 
 ```bash
-export SQLALCHEMY_DATABASE_URI = "YOUR_DATABASE_URL"
+export SQLALCHEMY_DATABASE_URI = "YOUR_DATABASE_URI"
 ```
 
 A SQLAlchemy database connection is defined by a string with the following format:
@@ -338,7 +338,7 @@ This command runs the `pokeomn` image as a container named `test` and forwards t
 
 ### Launch from Scratch
 
-If you have only built the two docker images but do not run the model pipeline and set up the database, you can do all of the and launch the app with the following.
+If you have only built the two docker images but do not run the model pipeline and set up the database, you can do all the work and launch the app with the following.
 
 ```bash
 make launch-in-one
