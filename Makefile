@@ -6,10 +6,10 @@ FINAL_DATA_PATH = data/final/results.csv
 .PHONY: image-data image-app clean-image clean-container
 
 image-data:
-	docker build -f Dockerfile_data -t pokemon_data .
+	docker build -f Dockerfile_data -t pokemon_data_wpz3146 .
 
 image-app:
-	docker build -f app/Dockerfile_app -t pokemon .
+	docker build -f app/Dockerfile_app -t pokemon_wpz3146 .
 
 clean-image:
 	docker image prune
@@ -48,12 +48,12 @@ mysql-it:
 create-db:
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		-e SQLALCHEMY_DATABASE_URI \
-		pokemon_data run_rds.py create_db
+		pokemon_data_wpz3146 run_rds.py create_db
 
 ingest-to-db:
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		-e SQLALCHEMY_DATABASE_URI \
-		pokemon_data run_rds.py ingest-csv --input_path=${FINAL_DATA_PATH}
+		pokemon_data_wpz3146 run_rds.py ingest-csv --input_path=${FINAL_DATA_PATH}
 
 
 # Model Pipeline
@@ -63,31 +63,31 @@ s3-upload:
 	docker run \
 		-e AWS_ACCESS_KEY_ID \
 		-e AWS_SECRET_ACCESS_KEY \
-		pokemon_data run_s3.py --local_path=${LOCAL_PATH} --s3_path=${S3_PATH}
+		pokemon_data_wpz3146 run_s3.py --local_path=${LOCAL_PATH} --s3_path=${S3_PATH}
 
 data/raw/pokemon.csv: run_s3.py
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
 		-e AWS_ACCESS_KEY_ID \
 		-e AWS_SECRET_ACCESS_KEY \
-		pokemon_data run_s3.py --download --local_path=${LOCAL_PATH} --s3_path=${S3_PATH}
+		pokemon_data_wpz3146 run_s3.py --download --local_path=${LOCAL_PATH} --s3_path=${S3_PATH}
 
 s3-raw: data/raw/pokemon.csv
 
 data/interim/data_scale.csv: run_model.py config/model_config.yaml data/raw/pokemon.csv
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
-		pokemon_data run_model.py preprocess --input=data/raw/pokemon.csv --config=config/model_config.yaml
+		pokemon_data_wpz3146 run_model.py preprocess --input=data/raw/pokemon.csv --config=config/model_config.yaml
 
 preprocess: data/interim/data_scale.csv
 
 models/kmeans.joblib figures/cluster_selection.png: run_model.py config/model_config.yaml data/interim/data_scale.csv
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
-		pokemon_data  run_model.py train --input=data/interim/data_scale.csv --config=config/model_config.yaml
+		pokemon_data_wpz3146  run_model.py train --input=data/interim/data_scale.csv --config=config/model_config.yaml
 
 train: models/kmeans.joblib figures/cluster_selection.png
 
 data/final/results.csv: run_model.py config/model_config.yaml models/kmeans.joblib
 	docker run --mount type=bind,source="$(shell pwd)",target=/app/ \
-		pokemon_data  run_model.py recommend --input=data/raw/pokemon.csv --config=config/model_config.yaml
+		pokemon_data_wpz3146  run_model.py recommend --input=data/raw/pokemon.csv --config=config/model_config.yaml
 
 recommend: data/final/results.csv
 
@@ -99,7 +99,7 @@ model-all: s3-raw preprocess train recommend
 docker-app-local:
 	docker run -e SQLALCHEMY_DATABASE_URI \
         --mount type=bind,source="$(shell pwd)",target=/app/ \
-		-p 5000:5000 --name test pokemon
+		-p 5000:5000 --name test pokemon_wpz3146
 
 kill-app-local:
 	docker kill test
@@ -108,7 +108,7 @@ kill-app-local:
 .PHONY: test
 
 test:
-	docker run pokemon_data -m pytest
+	docker run pokemon_data_wpz3146 -m pytest
 
 # Theory of Everything
 .PHONY: launch-in-one clean-all
