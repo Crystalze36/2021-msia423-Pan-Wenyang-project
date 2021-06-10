@@ -1,6 +1,7 @@
 import traceback
 import logging.config
 
+import sqlalchemy
 from flask import Flask
 from flask import render_template, request
 
@@ -21,6 +22,8 @@ logger.debug('Web app log')
 # Initialize the database session
 pokemon_manager = PokemonManager(app)
 
+logger.info('The database dialect is %s', app.config['SQLALCHEMY_DATABASE_URI'].split(':')[0])
+
 
 @app.route('/')
 def form():
@@ -38,9 +41,9 @@ def data():
             if len(pokemons) == 0:
                 return render_template('not_found.html', user_input=user_input)
             return render_template('index.html', pokemons=pokemons, user_input=user_input)
-        except:
+        except sqlalchemy.exc.OperationalError:
             traceback.print_exc()
-            logger.warning("Not able to display tracks, error page returned")
+            logger.warning("Not able to display pokemons, error page returned")
             return render_template('error.html')
 
 

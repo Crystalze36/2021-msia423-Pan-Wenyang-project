@@ -23,12 +23,10 @@ dist/
 Thumbs.db
 
 # Data
-data/*
-!data/sample/
-!data/external/
+data/msia423_pokemons.db
 config/local
 !.gitkeep
-!data/result.csv
+
 
 # Credentials
 .mysqlconfig
@@ -37,3 +35,6 @@ config/local
 
 # AWS Deploy
 copilot
+
+# Project Specific
+debug.ipynb

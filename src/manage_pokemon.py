@@ -45,8 +45,15 @@ def create_db(engine_string: str) -> None:
     """
     engine = sqlalchemy.create_engine(engine_string)
 
-    Base.metadata.create_all(engine)
-    logger.info("Database created.")
+    try:
+        Base.metadata.create_all(engine)
+    except sqlalchemy.exc.OperationalError as e:
+        my_message = ('You might have connection error. Have you configured \n'
+                      'SQLALCHEMY_DATABASE_URI variable correctly and connect to Northwestern VPN?')
+        logger.error(f'The original error is: {e}')
+        logger.error(f"{my_message}")
+    else:
+        logger.info("Database created.")
 
 
 class PokemonManager:
@@ -73,39 +80,32 @@ class PokemonManager:
         """
         self.session.close()
 
-    def add_pokemon_rec(self, name: str, the_rank: int, rec: str,
-                        type1: str, type2: str, abilities: str,
-                        generation: int, learn_more: str) -> None:
-        """Seeds an existing database with additional Pokemons.
+    def add_pokemon_rec_df(self, input_path: str) -> None:
+        """
+        Add all the data in a csv file into the database
         Args:
-            name (str): name of the pokemon
-            the_rank (int):
-            rec (str):
-            type1 (str): the first type of that pokemon
-            type2 (str): the second type of that pokemon
-            abilities (str):
-            generation (int):
-            learn_more (str):
-        Returns:None
+            input_path: the path of the csv file
+        Returns: None
         """
 
         session = self.session
-        pokemon = Pokemon(input=name, the_rank=the_rank, recommendation=rec,
-                          type1=type1, type2=type2, abilities=abilities,
-                          generation=generation, learn_more=learn_more)
-        session.add(pokemon)
-        session.commit()
-        logger.info(f"Pokemon {name} with {rec} was added to the database")
-
-    def add_pokemon_rec_df(self, input_path: str) -> None:
-
-        session = self.session
-        persist_list = []
+        # Make the dataframe to a list of dictionaries to pass the data into the Pokemon class easily
         data_list = pd.read_csv(input_path).to_dict(orient='records')
 
+        persist_list = []
         for data in data_list:
             persist_list.append(Pokemon(**data))
-        session.add_all(persist_list)
 
-        session.commit()
-        logger.info(f'{len(persist_list)} records were added to the table')
+        try:
+            session.add_all(persist_list)
+            session.commit()
+        except sqlalchemy.exc.OperationalError:
+            my_message = ('You might have connection error. Have you configured \n'
+                          'SQLALCHEMY_DATABASE_URI variable correctly and connect to Northwestern VPN?')
+            logger.error(f"{my_message} \n The original error message is: ", exc_info=True)
+        except sqlalchemy.exc.IntegrityError:
+            my_message = ('Have you already inserted the same record into the database before? \n'
+                          'This database does not allow duplicate in the input-recommendation pair')
+            logger.error(f"{my_message} \n The original error message is: ", exc_info=True)
+        else:
+            logger.info(f'{len(persist_list)} records were added to the table')
